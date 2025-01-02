@@ -1,3 +1,17 @@
+DROP TABLE IF EXISTS lin_ped;
+DROP TABLE IF EXISTS comentario;
+DROP TABLE IF EXISTS lista_deseos;
+DROP TABLE IF EXISTS carrito;
+DROP TABLE IF EXISTS pedido;
+DROP TABLE IF EXISTS cliente;
+DROP TABLE IF EXISTS existencias;
+DROP TABLE IF EXISTS tienda;
+DROP TABLE IF EXISTS imagen;
+DROP TABLE IF EXISTS articulo;
+DROP TABLE IF EXISTS subcategoria;
+DROP TABLE IF EXISTS categoria;
+DROP TABLE IF EXISTS marca;
+
 -- Creación de la tabla 'marca'
 CREATE TABLE marca (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -31,8 +45,10 @@ CREATE TABLE articulo (
     precio DECIMAL(10,2),
     descuento DECIMAL(5,2),
     marca_id INT,
+    categoria_id INT,
     subcategoria_id INT,
     FOREIGN KEY (marca_id) REFERENCES marca(id),
+    FOREIGN KEY (categoria_id) REFERENCES categoria(id),
     FOREIGN KEY (subcategoria_id) REFERENCES subcategoria(id)
 );
 
