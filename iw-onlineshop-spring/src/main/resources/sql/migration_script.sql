@@ -66,9 +66,9 @@ CREATE TABLE tienda (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(255) NOT NULL,
     direccion VARCHAR(255),
-    email VARCHAR(255),
-    web VARCHAR(255),
-    telefono VARCHAR(50)
+    email VARCHAR(255) NOT NULL,
+    web VARCHAR(255) NOT NULL,
+    telefono VARCHAR(50) NOT NULL
 );
 
 -- Tabla de existencias entre tienda y articulo
