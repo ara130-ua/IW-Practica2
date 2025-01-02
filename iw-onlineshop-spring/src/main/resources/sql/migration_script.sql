@@ -183,15 +183,15 @@ INSERT INTO subcategoria (nombre, categoria_id) VALUES
 ('Zapatillas', 3),
 ('Accesorios', 3),
 -- padel
-('Camisetas', 4)
-('Pantalones', 4)
+('Camisetas', 4),
+('Pantalones', 4),
 ('Zapatillas', 4),
 ('Palas', 4),
 ('Pelotas', 4),
 ('Accesorios', 4),
 -- tenis
-('Camisetas', 5)
-('Pantalones', 5)
+('Camisetas', 5),
+('Pantalones', 5),
 ('Zapatillas', 5),
 ('Palas', 5),
 ('Pelotas', 5),
@@ -252,7 +252,7 @@ INSERT INTO articulo (referencia, nombre, descripcion_corta, descripcion_larga, 
 ('REF-7922', 'Classic Camisetas Tenis', 'Camisetas de tenis diseñadas para brindar confort y rendimiento durante los partidos.', 'Fabricadas con un material que garantiza una alta transpirabilidad, estas camisetas permiten que los jugadores se mantengan frescos y cómodos en todo momento.', 'Disponible en varios tamaños y colores. Producto garantizado para tenistas que buscan calidad y confort en la cancha.', 'Modelo-25', 'S', 21.73, 0, 2, 1, 5),
 ('REF-6950', 'Advance Pantalones Running', 'Pantalones de running diseñados para maximizar el rendimiento de los corredores, ofreciendo una excelente comodidad y transpirabilidad.', 'Estos pantalones son ideales para corredores que buscan ligereza y flexibilidad, con un diseño que favorece la movilidad en cada zancada.', 'Disponible en varios tamaños y colores. Producto garantizado, ideal para los runners más exigentes.', 'Modelo-24', 'S', 81.78, 0, 4, 2, 3),
 ('REF-7088', 'Elite Pantalones Futbol', 'Pantalones de fútbol de alto rendimiento, ideales para jugadores que buscan comodidad y libertad en el campo.', 'Estos pantalones están diseñados para optimizar el rendimiento de los futbolistas durante los entrenamientos y partidos, con un material flexible que mejora el movimiento.', 'Disponible en varios tamaños y colores. Producto garantizado para futbolistas de alto nivel.', 'Modelo-4', 'XL', 177.43, 0, 2, 2, 1),
-('REF-9996', 'Advance Accesorios Running', 'Accesorios de running avanzados que garantizan un ajuste perfecto y comodidad durante carreras largas.', 'Estos accesorios están fabricados con materiales de alta calidad, proporcionando soporte y transpirabilidad, esenciales para los corredores que buscan rendimiento en todo momento.', 'Disponible en varios tamaños y colores. Producto garantizado, ideal para runners que exigen lo mejor.', 'Modelo-13', 'M', 150.16, 0, 2, 4, 3);
+('REF-9996', 'Advance Accesorios Running', 'Accesorios de running avanzados que garantizan un ajuste perfecto y comodidad durante carreras largas.', 'Estos accesorios están fabricados con materiales de alta calidad, proporcionando soporte y transpirabilidad, esenciales para los corredores que buscan rendimiento en todo momento.', 'Disponible en varios tamaños y colores. Producto garantizado, ideal para runners que exigen lo mejor.', 'Modelo-13', 'M', 150.16, 0, 2, 4, 3),
 ('REF-2910', 'Classic Pelotas Padel', 'Pelotas de padel de alta calidad, diseñadas para asegurar un rendimiento superior en cada partido.', 'Hechas con materiales de alta calidad, estas pelotas son duraderas y mantienen su consistencia en la cancha, asegurando un juego excelente.', 'Disponible en varios tamaños y colores. Producto garantizado, ideal para jugadores de todos los niveles.', 'Modelo-23', 'S', 74.99, 0, 4, 5, 4),
 ('REF-6058', 'Advance Pantalones Futbol', 'Pantalones diseñados para fútbol, ideales para mantener la comodidad y libertad de movimiento durante el juego.', 'Estos pantalones cuentan con un material de alta tecnología que favorece el rendimiento de los futbolistas, ofreciendo elasticidad y transpirabilidad.', 'Disponible en varios tamaños y colores. Producto garantizado para futbolistas de alto rendimiento.', 'Modelo-13', 'XL', 53.0, 0, 1, 2, 1),
 ('REF-4016', 'Classic Camisetas Baloncesto', 'Camisetas de baloncesto diseñadas para ofrecer una comodidad óptima durante el juego.', 'Fabricadas con materiales ligeros y transpirables, estas camisetas ayudan a mantener el cuerpo fresco y cómodo durante los partidos intensos.', 'Disponible en varios tamaños y colores. Producto garantizado para jugadores de baloncesto.', 'Modelo-33', 'L', 99.06, 0, 2, 1, 2),
@@ -280,7 +280,7 @@ INSERT INTO articulo (referencia, nombre, descripcion_corta, descripcion_larga, 
 ('REF-6468', 'Advance Camisetas Baloncesto', 'Camisetas de baloncesto que combinan ligereza y transpirabilidad, diseñadas para jugadores de alto rendimiento.', 'Con un diseño especial que mejora la comodidad durante los entrenamientos o partidos, estas camisetas aseguran máxima frescura y libertad de movimiento.', 'Disponible en varios tamaños y colores. Producto garantizado para jugadores de baloncesto profesionales.', 'Modelo-10', 'L', 139.24, 0, 5, 1, 2),
 ('REF-7281', 'Classic Accesorios Baloncesto', 'Accesorios ideales para baloncesto, diseñados para mejorar el rendimiento y proteger al jugador durante el juego.', 'Estos accesorios son perfectos para jugadores que buscan comodidad, resistencia y soporte en cada partido de baloncesto.', 'Disponible en varios tamaños y colores. Producto garantizado para jugadores de baloncesto.', 'Modelo-9', 'L', 109.15, 0, 1, 5, 2),
 ('REF-9503', 'Pro Accesorios Running', 'Accesorios para runners que mejoran el confort y rendimiento durante las carreras.', 'Hechos con materiales de alta calidad, estos accesorios optimizan el soporte y la transpirabilidad, asegurando que el corredor se sienta cómodo en todo momento.', 'Disponible en varios tamaños y colores. Producto garantizado para runners de todos los niveles.', 'Modelo-30', 'S', 117.5, 0, 5, 4, 3),
-('REF-3630', 'Advance Zapatillas Futbol', 'Zapatillas de fútbol diseñadas para brindar tracción, estabilidad y confort durante los partidos.', 'Estas zapatillas están diseñadas con materiales de alta tecnología, asegurando que el jugador se mueva con rapidez y seguridad en cualquier terreno de juego.', 'Disponible en varios tamaños y colores. Producto garantizado para futbolistas profesionales.', 'Modelo-15', 'XL', 44.99, 0, 5, 3, 1);
+('REF-3630', 'Advance Zapatillas Futbol', 'Zapatillas de fútbol diseñadas para brindar tracción, estabilidad y confort durante los partidos.', 'Estas zapatillas están diseñadas con materiales de alta tecnología, asegurando que el jugador se mueva con rapidez y seguridad en cualquier terreno de juego.', 'Disponible en varios tamaños y colores. Producto garantizado para futbolistas profesionales.', 'Modelo-15', 'XL', 44.99, 0, 5, 3, 1),
 ('REF-3637', 'Xtreme Pelotas Padel', 'Pelotas de alta resistencia para padel.', 'Estas pelotas están diseñadas especialmente para el pádel, ofreciendo un rendimiento excepcional en cada golpe. Son ideales para jugadores que buscan calidad y durabilidad.', 'Fabricadas con materiales premium para garantizar la máxima durabilidad y estabilidad. Disponible en varias combinaciones de colores.', 'Modelo-41', 'L', 145.26, 0, 1, 5, 4),
 ('REF-8146', 'Advance Zapatillas Running', 'Zapatillas de running ultraligeras y cómodas.', 'Estas zapatillas están diseñadas para proporcionar el máximo confort y soporte durante tus carreras. Perfectas para corredores que buscan velocidad y resistencia.', 'Con tecnología avanzada de amortiguación y diseño aerodinámico, son ideales para largas distancias y entrenamientos intensos.', 'Modelo-24', 'S', 71.27, 0, 2, 3, 3),
 ('REF-4212', 'Xtreme Accesorios Baloncesto', 'Accesorios de baloncesto de alta calidad.', 'Estos accesorios están diseñados para optimizar tu rendimiento en la cancha, proporcionando mayor control y comodidad. Ideal para jugadores de baloncesto de cualquier nivel.', 'Incluye accesorios como muñequeras, rodilleras y más, todos fabricados con materiales resistentes y ligeros. Disponible en diferentes tamaños y colores.', 'Modelo-26', 'M', 195.12, 0, 3, 5, 2),
@@ -309,28 +309,28 @@ INSERT INTO tienda (nombre, direccion, email, web, telefono) VALUES
 ('Sportive Castellón', 'Calle Mayor, 12', 'sportiveCastellon@gmail.com', 'www.sportive.com', '964 43 21 65');
 
 -- TABLA EXISTENCIAS
-INSERT INTO existencias (id_tienda, id_articulo, cantidad)
-SELECT tienda.id, articulo.id, 500
+INSERT INTO existencias (tienda_id, articulo_cod, cantidad)
+SELECT tienda.id, articulo.cod, 500
 FROM tienda, articulo
 WHERE tienda.id = 1;
 
-INSERT INTO existencias (id_tienda, id_articulo, cantidad)
-SELECT tienda.id, articulo.id, 50
+INSERT INTO existencias (tienda_id, articulo_cod, cantidad)
+SELECT tienda.id, articulo.cod, 50
 FROM tienda, articulo
 WHERE tienda.id = 2;
 
-INSERT INTO existencias (id_tienda, id_articulo, cantidad)
-SELECT tienda.id, articulo.id, 50
+INSERT INTO existencias (tienda_id, articulo_cod, cantidad)
+SELECT tienda.id, articulo.cod, 50
 FROM tienda, articulo
 WHERE tienda.id = 3;
 
-INSERT INTO existencias (id_tienda, id_articulo, cantidad)
-SELECT tienda.id, articulo.id, 50
+INSERT INTO existencias (tienda_id, articulo_cod, cantidad)
+SELECT tienda.id, articulo.cod, 50
 FROM tienda, articulo
 WHERE tienda.id = 4;
 
-INSERT INTO existencias (id_tienda, id_articulo, cantidad)
-SELECT tienda.id, articulo.id, 50
+INSERT INTO existencias (tienda_id, articulo_cod, cantidad)
+SELECT tienda.id, articulo.cod, 50
 FROM tienda, articulo
 WHERE tienda.id = 5;
 
@@ -369,7 +369,7 @@ INSERT INTO carrito (cliente_id, articulo_cod, cantidad) VALUES
 (9, 67, 1),
 (9, 33, 5),
 (10, 5, 2),
-(10, 40, 3)
+(10, 40, 3),
 (11, 3, 2),
 (11, 45, 5),
 (11, 78, 1);
