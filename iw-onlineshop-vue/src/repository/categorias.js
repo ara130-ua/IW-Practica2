@@ -1,9 +1,36 @@
-import { conexionbbdd } from "@/conexionbbdd";
+import { conexionbbdd } from "../conexionbbdd.js";
+
 
 //Gestionar categorías
 export async function anadirCategoria( categoria ){
     return new Promise((resolve, reject) => {
         conexionbbdd.query('INSERT INTO categoria (nombre) VALUES (?)', [categoria], function (error, results) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+// Ver productos de una categoria dado su nombre
+export async function getProductByCategoryName(name){
+    return new Promise((resolve, reject) => {
+        conexionbbdd.query('SELECT * FROM articulo a, categoria c WHERE a.categoria_id = c.id and c.nombre = ?', [name], function (error, results) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+// Ver productos de una categoria dado su id
+export async function getProductByCategoryId(id){
+    return new Promise((resolve, reject) => {
+        conexionbbdd.query('SELECT * FROM articulo WHERE categoria_id = ?', [id], function (error, results) {
             if (error) {
                 reject(error);
             } else {
@@ -95,7 +122,20 @@ export async function modificarSubCategoria(id, subcategoria){
 //verSubCategoriade()
 export async function verSubCategoriade(id_categoria){
     return new Promise((resolve, reject) => {
-        conexionbbdd.query('SELECT * FROM subcategoria WHERE cateregoria_id = ?', [id_categoria], function (error, results) {
+        conexionbbdd.query('SELECT * FROM subcategoria WHERE categoria_id = ?', [id_categoria], function (error, results) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+// ver productos de una subcategoria
+export async function getProductBySubcategoryId(id){
+    return new Promise((resolve, reject) => {
+        conexionbbdd.query('SELECT * FROM articulo WHERE subcategoria_id = ?', [id], function (error, results) {
             if (error) {
                 reject(error);
             } else {
