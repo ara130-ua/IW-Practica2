@@ -1,29 +1,26 @@
-<script setup></script>
+<script setup>
+import ImgHomePage from '@/components/ImgHomePage.vue'
+import ArticuloSlider from '@/components/ArticuloSlider.vue'
+import articulosData from '@/resources/data/articulos.json'
+import { ref } from 'vue'
+import { onMounted } from 'vue'
+
+const articulos = ref(articulosData)
+var articulosArray = ref([])
+
+onMounted(() => {
+  //console.log(articulos.value)
+  // quiero guardar los articulos en un array
+  articulosArray.value = Object.values(articulos.value)
+  console.log(articulosArray.value)
+})
+</script>
 
 <template>
-  <div class="home-page">
-    <img src="@/assets/img-homepage.avif" alt="Imagen principal" class="home-page-image" />
-    <div class="text-overlay">
-      <h1 class="home-page-title">Welcome to SPORTIVE</h1>
-      <p class="home-page-subtitle">The best place to find sportswear</p>
-    </div>
+  <div>
+    <ImgHomePage />
+    <ArticuloSlider :articulos="articulosArray" />
   </div>
 </template>
 
-<style scoped>
-.home-page {
-  position: relative;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.text-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: white;
-  z-index: 2;
-}
-</style>
+<style scoped></style>
