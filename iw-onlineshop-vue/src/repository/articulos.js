@@ -1,4 +1,4 @@
-import { conexionbbdd } from "@/conexionbbdd";
+import { conexionbbdd } from "../conexionbbdd.js";
 
 //crearArticulo() referencia, nombre, descripcion-corta, descripcion-larga, detalles, modelo, talla, precio, descuento, marca_id, categoria_id, subcategoria_id
 export async function crearArticulo(articulo){
