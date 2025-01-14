@@ -1,18 +1,28 @@
 <script>
+import { defineComponent, onMounted } from 'vue'
 import ArticuloCard from '@/components/ArticuloCard.vue'
+import { articulos } from '@/resources/data/articulosData'
 import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Navigation, Pagination } from 'swiper/modules'
+import { useArticuloStore } from '@/stores/articuloStore'
 
-export default {
-  props: {
-    articulos: {
-      type: Array,
-      required: true,
-    },
-  },
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+
+export default defineComponent({
   components: {
     Swiper,
     SwiperSlide,
     ArticuloCard,
+  },
+  setup() {
+    onMounted(() => {})
+
+    return {
+      articulos,
+      modules: [Navigation, Pagination],
+    }
   },
   data() {
     return {
@@ -20,52 +30,68 @@ export default {
     }
   },
   methods: {
-    mostrarDatos() {
-      this.articulos.forEach((element) => {
-        console.log(element)
-      })
-    },
     setSwiperRef(swiper) {
       this.swiperRef = swiper
     },
+    mostrarDatos() {
+      console.log(this.articulos)
+    },
+    irDetalles(id) {
+      var articuloStore = useArticuloStore()
+      articuloStore.setArticuloID(id)
+      this.$router.push('detalles/' + id)
+    },
   },
-}
+})
 </script>
 
 <template>
-  <div>
-    <button @click="mostrarDatos">datos</button>
-  </div>
-  <div>
+  <div class="articulo-slider-container">
     <swiper
       @swiper="setSwiperRef"
-      :slidesPerView="5"
-      :spaceBetween="30"
-      :centeredSlides="true"
-      :pagination="{
-        type: 'fraction',
-      }"
+      :modules="modules"
+      :slides-per-view="4"
+      :space-between="20"
       :navigation="true"
-      class="virtual-slider"
+      :pagination="{ clickable: true }"
+      class="articulo-slider"
     >
       <swiper-slide v-for="(articulo, index) in articulos" :key="index">
-        <ArticuloCard :articulo="articulo" />
+        <ArticuloCard
+          @click="irDetalles(articulo.id)"
+          :nombre="articulo.nombre"
+          :descripcion_corta="articulo.descripcion_corta"
+          :modelo="articulo.modelo"
+          :talla="articulo.talla"
+          :price="articulo.price"
+        />
       </swiper-slide>
     </swiper>
   </div>
 </template>
 
 <style scoped>
-.swiper.virtual-slider {
-  height: 300px;
+.articulo-slider-container {
+  width: 100%;
+  padding: 20px 0;
 }
-.virtual-slider .swiper-slide {
-  text-align: center;
-  font-size: 18px;
-  width: 300px !important;
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
+
+.datos-button {
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.articulo-slider {
+  height: 400px;
+  width: 100%;
+}
+
+.swiper-slide {
   display: flex;
   justify-content: center;
   align-items: center;
