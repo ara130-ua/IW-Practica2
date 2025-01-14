@@ -25,5 +25,9 @@ export const userStore = defineStore('user', {
         this.email = null; // Limpia el email en el estado
         sessionStorage.removeItem('email'); // Elimina el email de sessionStorage
     },
+    signOut() {
+      this.clearUid(); // Llama al método para limpiar el UID
+      this.clearEmail(); // Llama al método para limpiar el email
+    },
   },
 });
