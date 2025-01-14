@@ -13,10 +13,3 @@ app.use(router)
 app.mount('#app')
 
 // Connect to the database
-conexionbbdd.connect(function (error) {
-  if (error) {
-    throw error;
-  } else {
-    console.log('Conexión correcta con la base de datos.');
-  }
-});
