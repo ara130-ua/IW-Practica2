@@ -1,3 +1,5 @@
+import DetallesArticulo from '@/components/DetallesArticulo.vue'
+import FavoritosPage from '@/components/FavoritosPage.vue'
 import HomePage from '@/components/HomePage.vue'
 import RegisterPage from '@/components/RegisterPage.vue'
 import LoginPage from '@/components/LoginPage.vue'
@@ -16,15 +18,25 @@ const router = createRouter({
       name: 'about',
     },
     {
+      path: '/detalles/:id',
+      name: 'detalles',
+      component: DetallesArticulo,
+    },
+    {
+      path: '/favoritos',
+      name: 'favoritos',
+      component: FavoritosPage,
+    },
+    {
       path: '/login',
       name: 'login',
-      component: LoginPage
+      component: LoginPage,
     },
     {
       path: '/register',
       name: 'register',
-      component: RegisterPage
-    }
+      component: RegisterPage,
+    },
   ],
 })
 
