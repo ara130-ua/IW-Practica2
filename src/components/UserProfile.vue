@@ -71,7 +71,9 @@
 
 <script>
 import { Form, Field } from 'vee-validate'
+import { onMounted } from 'vue';
 import * as yup from 'yup'
+import {obtenerUsuarioEmail} from '@/repository/cliente'
 
 export default {
   name: 'UserProfile',
@@ -129,6 +131,10 @@ export default {
     }
   },
   methods: {
+    async onMounted() {
+      // Aquí iría la lógica para obtener los datos del perfil
+      // y asignarlos a userData
+    },
     async onSubmit(values) {
       try {
         console.log('Datos actualizados:', values)

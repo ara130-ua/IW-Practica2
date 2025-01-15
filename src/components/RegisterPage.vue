@@ -187,7 +187,11 @@
 
       user.setUid(userData.getId());
       user.setEmail(userData.getEmail());
-      user.setRol(userData.getRol());
+      if (userData.rol === 1) {
+        user.setRol('admin')
+      } else {
+        user.setRol('user')
+      }
       user.setName(userData.getNombre());
 
       router.push('/');
