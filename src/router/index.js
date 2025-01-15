@@ -6,6 +6,10 @@ import LoginPage from '@/components/LoginPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import CarritoPage from '@/components/CarritoPage.vue'
 import UserProfile from '@/components/UserProfile.vue'
+import BackofficePanel from '@/components/BackofficePanel.vue'
+import GestionPedidos from '@/components/GestionPedidos.vue'
+import GestionArticulos from '@/components/GestionArticulos.vue'
+import GestionCategorias from '@/components/GestionCategorias.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +52,26 @@ const router = createRouter({
       path: '/perfil',
       name: 'perfil',
       component: UserProfile,
+    },
+    {
+      path: '/office',
+      name: 'office',
+      component: BackofficePanel,
+    },
+    {
+      path: '/office/pedidos',
+      name: 'pedidos',
+      component: GestionPedidos,
+    },
+    {
+      path: '/office/articulos',
+      name: 'articulos',
+      component: GestionArticulos,
+    },
+    {
+      path: '/office/categorias',
+      name: 'categorias',
+      component: GestionCategorias,
     },
   ],
 })
