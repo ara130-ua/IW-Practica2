@@ -47,6 +47,7 @@ import * as yup from 'yup'
 import { EyeIcon, EyeOffIcon } from 'lucide-vue-next'
 import { userStore } from '@/stores/userStore'
 import router from '@/router'
+import { Usuario, loginUsuario, obtenerUsuario } from '@/repository/cliente'
 
 const schema = yup.object().shape({
   email: yup
@@ -55,7 +56,6 @@ const schema = yup.object().shape({
     .required('El correo electrónico es obligatorio'),
   password: yup
     .string()
-    .min(8, 'La contraseña debe tener al menos 8 caracteres')
     .required('La contraseña es obligatoria'),
 })
 
@@ -66,11 +66,27 @@ const togglePassword = () => {
 }
 
 const onSubmit = async (values) => {
-  console.log(values)
-  const user = userStore()
-  user.setUid('123')
-  user.setEmail(values.email)
-  router.push('/')
+    try{
+        console.log(values)
+        const user = userStore()
+        
+        const uid = await loginUsuario(values.email, values.password)
+
+        if (uid) {
+
+            const userData = await obtenerUsuario(uid)
+
+            user.setUid(uid)
+            user.setEmail(userData.email)
+            user.setRol(userData.rol)
+            user.setName(userData.name)
+            router.push('/')
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+
 }
 </script>
 

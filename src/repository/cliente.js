@@ -1,5 +1,4 @@
-import { conexionbbdd } from "../conexionbbdd.js";
-
+import { supabase } from "../utils/supabase.ts";
 export class Usuario {
     constructor(id, email, nombre, password, apellidos, telefono, postal, rol){
         this.id = id;
@@ -81,21 +80,24 @@ export class Usuario {
 
 /**
  *
- * @param {objeto usuario} usuario
- * @returns resultado de la consulta
+ * @param {string} email del usuario a loguear {string} password del usuario a loguear
+ * @returns uid del usuario logueado
  */
-export async function loginUsuario(usuario){
-    return new Promise((resolve, reject) => {
-        conexionbbdd.query('SELECT * FROM cliente WHERE email = ? AND clave = ?', [usuario.getEmail(), usuario.getPassword()], function (error, results) {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(results);
-            }
-        });
-    });
-}
+export async function loginUsuario(email, password){
 
+    try {
+        const {data, error} = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+        if (error) {
+            throw error;
+        }
+        return data.user.id;
+    } catch (error) {
+        return null
+    }
+}
 /**
  *
  * @param {objeto usuario} usuario
@@ -134,15 +136,20 @@ export async function modificarUsuario(usuario){
 
 //Información del usuario, el usuario tiene id, email, nombre, clave, apellidos, telefono, postal, rol
 export async function obtenerUsuario(id){
-    return new Promise((resolve, reject) => {
-        conexionbbdd.query('SELECT * FROM cliente WHERE id = ?', [id], function (error, results) {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(results);
-            }
-        });
-    });
+    try {
+        const { data, error } = await supabase
+                                    .from('cliente')
+                                    .select('*')
+                                    .eq('id', id)
+                                    .single();
+        if (error) {
+            throw error;
+        } else {
+            return new Usuario(data.id, data.email, data.nombre, data.password, data.apellidos, data.telefono, data.postal, data.rol);
+        }
+    } catch (error) {
+        return null;
+    }
 }
 
 //Cerrar sesión del usuario (se encarga el front?)
