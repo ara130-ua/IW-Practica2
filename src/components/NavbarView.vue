@@ -48,16 +48,16 @@ const logOut = async () => {
         <button @click="toggleDropdown" class="dropdown-button">Menú</button>
         <ul v-if="isDropdownOpen" class="dropdown-menu">
           <li>
-            <RouterLink to="/profile" @click="toggleDropdown">Perfil</RouterLink>
-          </li>
-          <li>
-            <RouterLink to="/login" @click="logOut">Cerrar sesión</RouterLink>
+            <RouterLink to="/perfil" @click="toggleDropdown">Perfil</RouterLink>
           </li>
           <li>
             <RouterLink to="/carrito" @click="toggleDropdown">Carrito</RouterLink>
           </li>
           <li>
             <RouterLink to="/favoritos" @click="toggleDropdown">Favoritos</RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/login" @click="logOut">Cerrar sesión</RouterLink>
           </li>
         </ul>
       </div>
