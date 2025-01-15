@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink } from 'vue-router'
-import { userStore } from '@/stores/userStore';
+import { userStore } from '@/stores/userStore'
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const user = userStore()
@@ -32,11 +32,7 @@ const logOut = async () => {
 
 <template>
   <nav class="navbar">
-    <div class="navbar-left">
-      <RouterLink class="router-link"> Shop </RouterLink>
-      <RouterLink class="router-link"> Collections </RouterLink>
-      <RouterLink class="router-link"> About </RouterLink>
-    </div>
+    <div class="nabar-left"></div>
     <div class="navbar-center">
       <RouterLink to="/" class="router-link">
         <h1 class="title-navbar">SPORTIVE</h1>
@@ -44,17 +40,28 @@ const logOut = async () => {
     </div>
 
     <div class="navbar-right">
-      <div class="dropdown">
+      <div v-if="!user.email">
+        <RouterLink class="router-link" to="/login" @click="toggleDropdown">Login</RouterLink>
+        <RouterLink class="router-link" to="/register" @click="toggleDropdown">Register</RouterLink>
+      </div>
+      <div class="dropdown" v-if="user.email">
         <button @click="toggleDropdown" class="dropdown-button">Menú</button>
         <ul v-if="isDropdownOpen" class="dropdown-menu">
-          <li v-if="!user.email"><RouterLink to="/login" @click="toggleDropdown">Login</RouterLink></li>
-          <li v-if="!user.email"><RouterLink to="/register" @click="toggleDropdown">Register</RouterLink></li>
-          <li v-if="user.email"><RouterLink to="/profile" @click="toggleDropdown">Perfil</RouterLink></li>
-          <li v-if="user.email"><RouterLink to="/login" @click="logOut">Cerrar sesión</RouterLink></li>
+          <li>
+            <RouterLink to="/profile" @click="toggleDropdown">Perfil</RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/login" @click="logOut">Cerrar sesión</RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/carrito" @click="toggleDropdown">Carrito</RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/favoritos" @click="toggleDropdown">Favoritos</RouterLink>
+          </li>
         </ul>
       </div>
     </div>
-
   </nav>
 </template>
 
@@ -62,6 +69,7 @@ const logOut = async () => {
 .router-link {
   text-decoration: none;
   color: #333;
+  margin-right: 1rem;
 }
 
 .title-navbar {
@@ -128,4 +136,3 @@ const logOut = async () => {
   background-color: #e9ecef;
 }
 </style>
-

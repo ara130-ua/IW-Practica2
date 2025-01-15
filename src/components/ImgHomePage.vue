@@ -67,11 +67,13 @@
 }
 
 .home-page-title {
+  font-family: 'Adlam Display', sans-serif;
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
 }
 
 .home-page-subtitle {
+  font-family: 'Adlam Display', sans-serif;
   font-size: 1.25rem;
 }
 

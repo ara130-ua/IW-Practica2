@@ -4,6 +4,7 @@ import HomePage from '@/components/HomePage.vue'
 import RegisterPage from '@/components/RegisterPage.vue'
 import LoginPage from '@/components/LoginPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
+import CarritoPage from '@/components/CarritoPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/favoritos',
       name: 'favoritos',
       component: FavoritosPage,
+    },
+    {
+      path: '/carrito',
+      name: 'carrito',
+      component: CarritoPage,
     },
     {
       path: '/login',

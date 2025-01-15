@@ -1,6 +1,8 @@
 <script>
 import { useArticuloStore } from '@/stores/articuloStore'
+import { userStore } from '@/stores/userStore'
 import { onMounted } from 'vue'
+import router from '@/router'
 
 export default {
   name: 'DetallesArticulo',
@@ -41,8 +43,15 @@ export default {
       return `$${precio.toFixed(2)}`
     },
     comprar() {
-      alert('Procesando compra...')
-      // Aquí iría la lógica para procesar la compra
+      const user = userStore()
+      if (user.isLoggedIn) {
+        alert('Procesando compra...')
+        // Aquí iría la lógica para procesar la compra
+      } else {
+        alert('Debes iniciar sesión para comprar')
+        router.push('/login')
+        // Aquí iría la lógica para redirigir al usuario a la página de login
+      }
     },
     agregarAlCarrito() {
       alert('Artículo añadido al carrito')
