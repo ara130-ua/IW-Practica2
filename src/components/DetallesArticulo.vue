@@ -1,5 +1,4 @@
 <script setup>
-import { useArticuloStore } from '@/stores/articuloStore'
 import { getArticuloById } from '@/repository/articulos'
 import { userStore } from '@/stores/userStore'
 import { onMounted } from 'vue'

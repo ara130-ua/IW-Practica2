@@ -1,7 +1,6 @@
 <script>
-import { defineComponent, onMounted } from 'vue'
+import { defineComponent } from 'vue'
 import ArticuloCard from '@/components/ArticuloCard.vue'
-import { articulos } from '@/resources/data/articulosData'
 import { obtenerArticulos } from '@/repository/articulos'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination } from 'swiper/modules'
@@ -36,6 +35,7 @@ export default defineComponent({
       var articuloStore = useArticuloStore()
       articuloStore.setArticuloID(id)
       this.$router.push('detalles/' + id)
+      console.log('articulos: ', this.articulos)
     },
   },
 })

@@ -27,9 +27,9 @@
       <tbody>
         <tr v-for="pedido in filteredPedidos" :key="pedido.id">
           <td>#{{ pedido.id }}</td>
-          <td>{{ pedido.cliente }}</td>
+          <td>{{ pedido.cliente_id }}</td>
           <td>{{ formatDate(pedido.fecha) }}</td>
-          <td>{{ formatPrice(pedido.total) }}</td>
+          <td>{{ formatPrice(pedido.importe) }}</td>
           <td>
             <span class="status" :class="pedido.estado">
               {{ pedido.estado }}
@@ -52,6 +52,7 @@
 </template>
 
 <script>
+import { getPedidos } from '@/repository/pedido'
 export default {
   name: 'GestionPedidos',
   data() {
@@ -61,32 +62,34 @@ export default {
       pedidos: [
         {
           id: '1001',
-          cliente: 'Juan Pérez',
+          cliente_id: 'Juan Pérez',
           fecha: new Date('2024-01-10'),
-          total: 129.99,
+          importe: 129.99,
           estado: 'pendiente',
         },
-        {
-          id: '1002',
-          cliente: 'María García',
-          fecha: new Date('2024-01-09'),
-          total: 89.99,
-          estado: 'enviado',
-        },
-        // Más pedidos...
       ],
     }
   },
   computed: {
     filteredPedidos() {
       return this.pedidos.filter((pedido) => {
+        // Convertir id y cliente a cadenas para la comparación
+        const idStr = String(pedido.id)
+
+        // Comparar usando includes (asegurando que search también sea una cadena)
         const matchSearch =
-          pedido.id.includes(this.search) ||
-          pedido.cliente.toLowerCase().includes(this.search.toLowerCase())
+          idStr.includes(String(this.search)) || pedido.cliente_id.includes(String(this.search))
+
+        // Comparar el estado del filtro
         const matchStatus = !this.statusFilter || pedido.estado === this.statusFilter
+
+        // Retornar solo los pedidos que cumplan ambas condiciones
         return matchSearch && matchStatus
       })
     },
+  },
+  async created() {
+    this.pedidos = await getPedidos()
   },
   methods: {
     formatDate(date) {
