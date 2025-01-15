@@ -1,75 +1,72 @@
-<script>
+<script setup>
 import { useArticuloStore } from '@/stores/articuloStore'
+import { getArticuloById } from '@/repository/articulos'
 import { userStore } from '@/stores/userStore'
 import { onMounted } from 'vue'
-import router from '@/router'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
-export default {
-  name: 'DetallesArticulo',
-  setup() {
-    onMounted(() => {
-      // Aquí iría la lógica para cargar los detalles del artículo
-      console.log('Cargando detalles del artículo...')
-      const articuloStore = useArticuloStore()
-      const id = articuloStore.getArticuloID()
-      console.log('ID del artículo:', id)
-      //this.articulo = articuloStore.getArticulo(id)
-    })
-  },
-  data() {
-    return {
-      articulo: {
-        id: 0,
-        nombre: '',
-        descripcion: '',
-        modelo: '',
-        talla: '',
-        precio: 0,
-        descuento: 0,
-        imagen: '/placeholder.svg?height=300&width=300',
-      },
-      esFavorito: false,
-    }
-  },
-  computed: {
-    precioFinal() {
-      return this.articulo.descuento > 0
-        ? this.articulo.precio - this.articulo.descuento
-        : this.articulo.precio
-    },
-  },
-  methods: {
-    formatPrecio(precio) {
-      return `$${precio.toFixed(2)}`
-    },
-    comprar() {
-      const user = userStore()
-      if (user.isLoggedIn) {
-        alert('Procesando compra...')
-        // Aquí iría la lógica para procesar la compra
-      } else {
-        alert('Debes iniciar sesión para comprar')
-        router.push('/login')
-        // Aquí iría la lógica para redirigir al usuario a la página de login
-      }
-    },
-    agregarAlCarrito() {
-      alert('Artículo añadido al carrito')
-      // Aquí iría la lógica para añadir al carrito
-    },
-    toggleFavorito() {
-      this.esFavorito = !this.esFavorito
-      alert(this.esFavorito ? 'Añadido a favoritos' : 'Quitado de favoritos')
-      // Aquí iría la lógica para manejar favoritos
-    },
-  },
+// Referencias y estados reactivos
+var articulo = ref({
+  id: 0,
+  nombre: '',
+  descripcion: '',
+  modelo: '',
+  talla: '',
+  precio: 0,
+  descuento: 0,
+  imagen: '/placeholder.svg?height=300&width=300',
+})
+
+var esFavorito = ref(false)
+const router = useRouter()
+
+// Computed para el precio final
+const precioFinal = computed(() =>
+  articulo.value.descuento > 0
+    ? articulo.value.precio - articulo.value.descuento
+    : articulo.value.precio,
+)
+
+// Cargar detalles del artículo al montar el componente
+onMounted(async () => {
+  console.log('Cargando detalles del artículo...')
+  console.log('La id de la ruta es:', router.currentRoute.value.params.id)
+  articulo.value = await getArticuloById(router.currentRoute.value.params.id)
+  console.log('Detalles del artículo:', articulo.value)
+})
+
+// Métodos
+const formatPrecio = (precio) => `$${precio.toFixed(2)}`
+
+const comprar = () => {
+  const user = userStore()
+  if (user.isLoggedIn) {
+    alert('Procesando compra...')
+    // Lógica para procesar la compra
+  } else {
+    alert('Debes iniciar sesión para comprar')
+    router.push('/login')
+    // Lógica para redirigir al usuario a la página de login
+  }
+}
+
+const agregarAlCarrito = () => {
+  alert('Artículo añadido al carrito')
+  // Lógica para añadir al carrito
+}
+
+const toggleFavorito = () => {
+  esFavorito.value = !esFavorito.value
+  alert(esFavorito.value ? 'Añadido a favoritos' : 'Quitado de favoritos')
+  // Lógica para manejar favoritos
 }
 </script>
 
 <template>
   <div class="detalles-articulo">
     <div class="imagen-producto">
-      <img :src="articulo.imagen" :alt="articulo.nombre" />
+      <!-- <img :src="articulo.imagen" :alt="articulo.nombre" /> -->
     </div>
     <div class="info-producto">
       <h1>{{ articulo.nombre }}</h1>
