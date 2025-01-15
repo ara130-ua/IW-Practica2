@@ -1,6 +1,6 @@
 import { supabase } from "../utils/supabase.ts";
 export class Usuario {
-    constructor(id, email, nombre, password, apellidos, telefono, postal, rol){
+    constructor(id, email, nombre, password, apellidos, telefono, postal, rol, dni, genero, fecha_nacimiento, direccion){
         this.id = id;
         this.email = email;
         this.nombre = nombre;
@@ -9,6 +9,10 @@ export class Usuario {
         this.telefono = telefono;
         this.postal = postal;
         this.rol = rol;
+        this.dni = dni;
+        this.genero = genero;
+        this.fecha_nacimiento = fecha_nacimiento;
+        this.direccion = direccion;
     }
 
     // Getters
@@ -44,6 +48,21 @@ export class Usuario {
         return this.rol;
     }
 
+    getDni(){
+        return this.dni;
+    }
+    
+    getGenero(){
+        return this.genero;
+    }
+
+    getFechaNacimiento(){
+        return this.fecha_nacimiento;
+    }
+
+    getDireccion(){
+        return this.direccion;
+    }
     // Setters
     setId(id){
         this.id = id;
@@ -76,6 +95,22 @@ export class Usuario {
     setRol(rol){
         this.rol = rol;
     }
+
+    setDni(dni){
+        this.dni = dni;
+    }
+
+    setGenero(genero){
+        this.genero = genero;
+    }
+
+    setFechaNacimiento(fecha_nacimiento){
+        this.fecha_nacimiento = fecha_nacimiento;
+    }
+
+    setDireccion(direccion){
+        this.direccion = direccion;
+    }
 }
 
 /**
@@ -104,16 +139,41 @@ export async function loginUsuario(email, password){
  * @returns  resultado de la consulta
  */
 export async function registrarUsuario(usuario){
-    return new Promise((resolve, reject) => {
-        //Encriptar contraseña
-        conexionbbdd.query('INSERT INTO cliente (nombre, email, clave, apellidos, telefono, postal, rol) VALUES (?, ?, ?, ?, ?, ?, ?)', [usuario.getNombre(), usuario.getEmail(), usuario.getPassword(), usuario.getApellidos(), usuario.getTelefono(), usuario.getPostal(), usuario.getRol()], function (error, results) {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(results);
-            }
+    try {
+        const {data, error} = await supabase.auth.signUp({
+            email: usuario.getEmail(),
+            password: usuario.getPassword()
         });
-    });
+
+        if (error) {
+            throw error;
+        }
+
+        usuario.setId(data.user.id);
+
+        const {data2, error2} = await supabase
+                                    .from('cliente')
+                                    .insert([
+                                        {id: usuario.getId(),
+                                        email: usuario.getEmail(),
+                                        nombre: usuario.getNombre(),
+                                        apellidos: usuario.getApellidos(),
+                                        telefono: usuario.getTelefono(),
+                                        localidad: usuario.getPostal(),
+                                        rol: usuario.getRol(),
+                                        dni: usuario.getDni(),
+                                        genero: usuario.getGenero(),
+                                        fecha_nacimiento: usuario.getFechaNacimiento(),
+                                        direccion: usuario.getDireccion()}]);
+        console.log(usuario);
+        if (error2) {
+            throw error2;
+        }
+        
+        return usuario;
+    } catch (error) {
+        return null;
+    }
 }
 
 //Modificar información de usuario

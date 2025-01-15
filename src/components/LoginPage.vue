@@ -47,7 +47,7 @@ import * as yup from 'yup'
 import { EyeIcon, EyeOffIcon } from 'lucide-vue-next'
 import { userStore } from '@/stores/userStore'
 import router from '@/router'
-import { Usuario, loginUsuario, obtenerUsuario } from '@/repository/cliente'
+import { loginUsuario, obtenerUsuario } from '@/repository/cliente'
 
 const schema = yup.object().shape({
   email: yup

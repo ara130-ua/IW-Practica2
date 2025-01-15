@@ -115,6 +115,7 @@
   import * as yup from 'yup';
   import { EyeIcon, EyeOffIcon } from 'lucide-vue-next';
   import { userStore } from '@/stores/userStore';
+  import { Usuario, registrarUsuario } from '@/repository/cliente.js';
 
   const schema = yup.object().shape({
     email: yup
@@ -132,8 +133,8 @@
     dni: yup
       .string()
       .required('El DNI es obligatorio')
-      .matches(/^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'DNI inválido')
-      .matches(/^[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'NIE inválido'),
+      .matches(/^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'DNI inválido'),
+      //.matches(/^[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'NIE inválido'),
     gender: yup.string().required('El género es obligatorio'),
     firstName: yup.string().required('El nombre es obligatorio'),
     lastName: yup.string().required('Los apellidos son obligatorios'),
@@ -161,7 +162,38 @@
   };
 
   const onSubmit = async (values) => {
-    console.log(values);
+    
+    try {
+
+      const userData = await registrarUsuario(new Usuario(
+        0,
+        values.email,
+        values.firstName,
+        values.password,
+        values.lastName,
+        values.phone,
+        values.city,
+        0,
+        values.dni,
+        values.gender,
+        values.birthDate,
+        values.address,
+      ));
+
+      console.log(userData);
+
+      const user = userStore();
+
+      user.setUid(userData.getId());
+      user.setEmail(userData.getEmail());
+      user.setRol(userData.getRol());
+      user.setName(userData.getName());
+
+      router.push('/');
+    } catch (error) {
+      console.log(error);
+    }
+
   };
 </script>
 
