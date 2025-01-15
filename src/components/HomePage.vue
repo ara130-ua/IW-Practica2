@@ -8,7 +8,9 @@ import { onMounted } from 'vue'
 <template>
   <div>
     <ImgHomePage />
-    <ArticuloSlider />
+    <Suspense>
+      <ArticuloSlider />
+    </Suspense>
   </div>
 </template>
 
