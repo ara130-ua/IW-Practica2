@@ -1,7 +1,9 @@
 <template>
   <div class="profile-container">
     <h1>Perfil de Usuario</h1>
+    <div v-if="isLoading">Cargando...</div>
     <Form
+      v-else
       @submit="onSubmit"
       :validation-schema="schema"
       v-slot="{ errors }"
@@ -32,7 +34,6 @@
       <div class="form-group">
         <label>Género</label>
         <Field name="genero" as="select">
-          <option value="">Seleccionar género</option>
           <option value="masculino">Masculino</option>
           <option value="femenino">Femenino</option>
           <option value="otro">Otro</option>
@@ -71,9 +72,9 @@
 
 <script>
 import { Form, Field } from 'vee-validate'
-import { onMounted } from 'vue';
 import * as yup from 'yup'
-import {obtenerUsuarioEmail} from '@/repository/cliente'
+import { obtenerUsuarioEmail, modificarUsuario, Usuario } from '@/repository/cliente'
+import { userStore } from '@/stores/userStore'
 
 export default {
   name: 'UserProfile',
@@ -83,16 +84,17 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       userData: {
-        email: 'usuario@ejemplo.com',
-        dni: '12345678A',
-        nombre: 'Juan',
-        apellidos: 'García López',
-        genero: 'masculino',
-        fechaNacimiento: '1990-01-01',
-        localidad: 'Madrid',
-        direccion: 'Calle Example 123',
-        telefono: '612345678',
+        email: '',
+        dni: '',
+        nombre: '',
+        apellidos: '',
+        genero: '',
+        fechaNacimiento: '',
+        localidad: '',
+        direccion: '',
+        telefono: '',
       },
       schema: yup.object({
         email: yup.string().email('Email inválido').required('Email es requerido'),
@@ -130,18 +132,63 @@ export default {
       }),
     }
   },
+  created() {
+    this.readUserData()
+  },
   methods: {
-    async onMounted() {
-      // Aquí iría la lógica para obtener los datos del perfil
-      // y asignarlos a userData
+    async readUserData() {
+      try {
+        const user = userStore()
+        if (!user || !user.email) {
+          throw new Error('No se pudo obtener el email del usuario.')
+        }
+        const datos = await obtenerUsuarioEmail(user.email)
+
+        if (!datos) {
+          throw new Error('No se pudieron obtener los datos del usuario.')
+        }
+        // Crear un nuevo objeto para forzar la reactividad
+        this.userData = {
+          email: datos.getEmail?.() || '',
+          dni: datos.getDni?.() || '',
+          nombre: datos.getNombre?.() || '',
+          apellidos: datos.getApellidos?.() || '',
+          genero: datos.getGenero?.() || '',
+          fechaNacimiento: datos.getFechaNacimiento?.() || '',
+          localidad: datos.getPostal?.() || '',
+          direccion: datos.getDireccion?.() || '',
+          telefono: datos.getTelefono?.() || ''
+        }
+
+      } catch (error) {
+        console.error('Error al cargar datos del usuario:', error)
+      } finally {
+        this.isLoading = false
+      }
     },
     async onSubmit(values) {
       try {
         console.log('Datos actualizados:', values)
-        // Aquí iría la lógica para actualizar el perfil
+
+        const user = userStore()
+        const usuario = await obtenerUsuarioEmail(user.email)
+        
+        usuario.setNombre(values.nombre)
+        usuario.setApellidos(values.apellidos)
+        usuario.setGenero(values.genero)
+        usuario.setFechaNacimiento(values.fechaNacimiento)
+        usuario.setPostal(values.localidad)
+        usuario.setDireccion(values.direccion)
+        usuario.setTelefono(values.telefono)
+
+        console.log(usuario)
+
+        if(await modificarUsuario(usuario))
+          console.log('Usuario modificado correctamente')
+
+
         alert('Perfil actualizado correctamente')
       } catch (error) {
-        console.error('Error al actualizar el perfil:', error)
         alert('Error al actualizar el perfil')
       }
     },
@@ -234,3 +281,4 @@ select:focus {
   }
 }
 </style>
+
