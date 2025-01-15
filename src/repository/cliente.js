@@ -1,5 +1,84 @@
 import { conexionbbdd } from "../conexionbbdd.js";
 
+export class Usuario {
+    constructor(id, email, nombre, password, apellidos, telefono, postal, rol){
+        this.id = id;
+        this.email = email;
+        this.nombre = nombre;
+        this.password = password;
+        this.apellidos = apellidos;
+        this.telefono = telefono;
+        this.postal = postal;
+        this.rol = rol;
+    }
+
+    // Getters
+    getId(){
+        return this.id;
+    }
+    
+    getEmail(){
+        return this.email;
+    }
+
+    getNombre(){
+        return this.nombre;
+    }
+
+    getPassword(){
+        return this.password;
+    }
+
+    getApellidos(){
+        return this.apellidos;
+    }
+
+    getTelefono(){
+        return this.telefono;
+    }
+
+    getPostal(){
+        return this.postal;
+    }
+
+    getRol(){
+        return this.rol;
+    }
+
+    // Setters
+    setId(id){
+        this.id = id;
+    }
+
+    setEmail(email){
+        this.email = email;
+    }
+
+    setNombre(nombre){
+        this.nombre = nombre;
+    }
+
+    setPassword(password){
+        this.password = password;
+    }
+
+    setApellidos(apellidos){
+        this.apellidos = apellidos;
+    }
+
+    setTelefono(telefono){
+        this.telefono = telefono;
+    }
+
+    setPostal(postal){
+        this.postal = postal;
+    }
+
+    setRol(rol){
+        this.rol = rol;
+    }
+}
+
 /**
  *
  * @param {objeto usuario} usuario
@@ -7,7 +86,7 @@ import { conexionbbdd } from "../conexionbbdd.js";
  */
 export async function loginUsuario(usuario){
     return new Promise((resolve, reject) => {
-        conexionbbdd.query('SELECT * FROM cliente WHERE email = ? AND clave = ?', [usuario.email, usuario.password], function (error, results) {
+        conexionbbdd.query('SELECT * FROM cliente WHERE email = ? AND clave = ?', [usuario.getEmail(), usuario.getPassword()], function (error, results) {
             if (error) {
                 reject(error);
             } else {
@@ -24,7 +103,8 @@ export async function loginUsuario(usuario){
  */
 export async function registrarUsuario(usuario){
     return new Promise((resolve, reject) => {
-        conexionbbdd.query('INSERT INTO cliente (nombre, email, password) VALUES (?, ?, ?)', [usuario.nombre, usuario.email, usuario.password], function (error, results) {
+        //Encriptar contraseña
+        conexionbbdd.query('INSERT INTO cliente (nombre, email, clave, apellidos, telefono, postal, rol) VALUES (?, ?, ?, ?, ?, ?, ?)', [usuario.getNombre(), usuario.getEmail(), usuario.getPassword(), usuario.getApellidos(), usuario.getTelefono(), usuario.getPostal(), usuario.getRol()], function (error, results) {
             if (error) {
                 reject(error);
             } else {
@@ -42,7 +122,7 @@ export async function registrarUsuario(usuario){
  */
 export async function modificarUsuario(usuario){
     return new Promise((resolve, reject) => {
-        conexionbbdd.query('UPDATE cliente SET nombre = ?, apellidos = ?, email = ?, password = ? WHERE id = ?', [usuario.nombre, usuario.apellidos, usuario.email, usuario.password, usuario.id], function (error, results) {
+        conexionbbdd.query('UPDATE cliente SET nombre = ?, email = ?, password = ?, apellidos = ?, telefono = ?, apellidos = ?, postal = ? WHERE id = ?', [usuario.getNombre(), usuario.getEmail(), usuario.getPassword(), usuario.getApellidos(), usuario.getTelefono(), usuario.getPostal(), usuario.getId()], function (error, results) {
             if (error) {
                 reject(error);
             } else {
@@ -94,6 +174,44 @@ export async function obtenerEstadoPedido(id){
 }
 
 //Lista de deseos
+//Carrito de la compra del usuario
+export async function obtenerListaDeseos(idUsuario){
+    return new Promise((resolve, reject) => {
+        conexionbbdd.query('SELECT * FROM lista_deseos where id = ?', [idUsuario], function (error, results) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//Añadir producto al carrito
+export async function anadirProductoListaDeseos(idUsuario, idProducto){
+  return new Promise((resolve, reject) => {
+      conexionbbdd.query('INSERT INTO lista_deseos (cliente_id, articulo_cod) VALUES (?, ?)', [idUsuario, idProducto], function (error, results) {
+          if (error) {
+              reject(error);
+          } else {
+              resolve(results);
+          }
+      });
+  });
+}
+
+//Eliminar producto del carrito
+export async function eliminarProductoListaDeseos(idUsuario, idProducto){
+  return new Promise((resolve, reject) => {
+      conexionbbdd.query('DELETE FROM lista_deseos WHERE cliente_id = ? AND articulo_cod = ?', [idUsuario, idProducto], function (error, results) {
+          if (error) {
+              reject(error);
+          } else {
+              resolve(results);
+          }
+      });
+  });
+}
 
 //Carrito de la compra del usuario
 export async function obtenerCarrito(idUsuario){
