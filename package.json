@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@vue/cli-service": "^5.0.8",
     "lucide-vue-next": "^0.471.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.12.0",
