@@ -1,11 +1,15 @@
-import mysql from 'mysql'
+import pkg from 'pg'; // Incompatibilidad
+const { Pool } = pkg;
 
-export var connectionbbdd = mysql.createConnection({
-  host: 'localhost',
-  user: 'IWTienda',
-  password: '3027',
-  database: 'iw-tienda',
-})
+
+// Configura las credenciales de conexión
+export const connectionbbdd = new Pool({
+  user: 'postgres.snuzpjwolxlygxasqfwp', // Usuario de la base de datos
+  host: 'aws-0-eu-central-1.pooler.supabase.com', // Dirección del host
+  database: 'postgres', // Nombre de la base de datos
+  password: 'boXzfjOgLtGTwPVp', // Contraseña de la base de datos
+  port: 5432, // Puerto (por defecto, 5432)
+  });
 
 // Connect to the database
 connectionbbdd.connect(function (error) {
