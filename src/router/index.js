@@ -5,6 +5,7 @@ import RegisterPage from '@/components/RegisterPage.vue'
 import LoginPage from '@/components/LoginPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import CarritoPage from '@/components/CarritoPage.vue'
+import UserProfile from '@/components/UserProfile.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +43,11 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: RegisterPage,
+    },
+    {
+      path: '/perfil',
+      name: 'perfil',
+      component: UserProfile,
     },
   ],
 })
