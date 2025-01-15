@@ -18,8 +18,8 @@
                 <input v-bind="field" :type="showPassword ? 'text' : 'password'" />
             </Field>
             <button type="button" class="toggle-password" @click="togglePassword">
-                <EyeIcon v-if="!showPassword" />
-                <EyeOffIcon v-else />
+                <EyeOffIcon v-if="!showPassword" />
+                <EyeIcon v-else />
             </button>
             </div>
             <span class="error" v-if="errors.password">{{ errors.password }}</span>
