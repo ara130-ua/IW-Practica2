@@ -14,19 +14,19 @@ DROP TABLE IF EXISTS marca;
 
 -- Creación de la tabla 'marca'
 CREATE TABLE marca (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL
 );
 
 -- Creación de la tabla 'categoria'
 CREATE TABLE categoria (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL
 );
 
 -- Creación de la tabla 'subcategoria'
 CREATE TABLE subcategoria (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
     categoria_id INT,
     FOREIGN KEY (categoria_id) REFERENCES categoria(id)
@@ -34,7 +34,7 @@ CREATE TABLE subcategoria (
 
 -- Creación de la tabla 'articulo'
 CREATE TABLE articulo (
-    cod INT PRIMARY KEY AUTO_INCREMENT,
+    cod SERIAL PRIMARY KEY,
     referencia VARCHAR(255),
     nombre VARCHAR(255) NOT NULL,
     descripcion_corta VARCHAR(255),
@@ -54,7 +54,7 @@ CREATE TABLE articulo (
 
 -- Creación de la tabla 'imagen'
 CREATE TABLE imagen (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     imagen VARCHAR(255) NOT NULL,
     es_principal BOOLEAN NOT NULL,
     articulo_cod INT,
@@ -63,7 +63,7 @@ CREATE TABLE imagen (
 
 -- Creación de la tabla 'tienda'
 CREATE TABLE tienda (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
     direccion VARCHAR(255),
     email VARCHAR(255) NOT NULL,
@@ -83,19 +83,23 @@ CREATE TABLE existencias (
 
 -- Creación de la tabla 'cliente'
 CREATE TABLE cliente (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
+    dni VARCHAR(255),
     email VARCHAR(255) UNIQUE NOT NULL,
     clave VARCHAR(255) NOT NULL,
     nombre VARCHAR(255) NOT NULL,
     apellidos VARCHAR(255),
+    fecha_nacimiento DATE,
+    genero VARCHAR(255),
     telefono VARCHAR(50),
     postal VARCHAR(10),
-    rol VARCHAR(50)
+    direccion VARCHAR(255),
+    rol INT
 );
 
 -- Creación de la tabla 'pedido'
 CREATE TABLE pedido (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     fecha DATE NOT NULL,
     importe DECIMAL(10,2),
     modo_entrega VARCHAR(100),
@@ -128,7 +132,7 @@ CREATE TABLE lista_deseos (
 
 -- Creación de la tabla 'comentario'
 CREATE TABLE comentario (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     comentario TEXT NOT NULL,
     articulo_cod INT,
     cliente_id INT,
@@ -336,17 +340,17 @@ WHERE tienda.id = 5;
 
 -- TABLA CLIENTE
 INSERT INTO cliente (email, clave, nombre, apellidos, telefono, postal, rol) VALUES
-('admin@gmail.com', 'admin', 'Nombre', 'Apellidos', '123-456-7890', '12345', 'admin'),
-('john.doe1@example.com', 'P@ssw0rd123', 'John', 'Doe', '123-456-7890', '12345', 'cliente'),
-('jane.smith2@example.com', 'SecurePass456!', 'Jane', 'Smith', '987-654-3210', '54321', 'cliente'),
-('alex.jones3@example.com', 'Password789$', 'Alex', 'Jones', '555-123-4567', '67890', 'cliente'),
-('lisa.brown4@example.com', 'MyP@ssw0rd!', 'Lisa', 'Brown', '444-987-6543', '11223', 'cliente'),
-('mike.davis5@example.com', 'PassWord2024#', 'Mike', 'Davis', '222-333-4444', '33445', 'cliente'),
-('susan.clark6@example.com', 'SuperPass456!', 'Susan', 'Clark', '777-888-9999', '99887', 'cliente'),
-('robert.white7@example.com', 'QwErTyUiOp123', 'Robert', 'White', '666-555-4444', '55443', 'cliente'),
-('nancy.green8@example.com', 'Complex#Pass987', 'Nancy', 'Green', '111-222-3333', '66778', 'cliente'),
-('david.hall9@example.com', 'SafePass321!', 'David', 'Hall', '999-888-7777', '77889', 'cliente'),
-('emma.taylor10@example.com', 'RandomPass654$', 'Emma', 'Taylor', '333-444-5555', '88900', 'cliente');
+('admin@gmail.com', 'admin', 'Nombre', 'Apellidos', '123-456-7890', '12345', 0),
+('john.doe1@example.com', 'P@ssw0rd123', 'John', 'Doe', '123-456-7890', '12345', 0),
+('jane.smith2@example.com', 'SecurePass456!', 'Jane', 'Smith', '987-654-3210', '54321', 0),
+('alex.jones3@example.com', 'Password789$', 'Alex', 'Jones', '555-123-4567', '67890', 0),
+('lisa.brown4@example.com', 'MyP@ssw0rd!', 'Lisa', 'Brown', '444-987-6543', '11223', 0),
+('mike.davis5@example.com', 'PassWord2024#', 'Mike', 'Davis', '222-333-4444', '33445', 0),
+('susan.clark6@example.com', 'SuperPass456!', 'Susan', 'Clark', '777-888-9999', '99887', 0),
+('robert.white7@example.com', 'QwErTyUiOp123', 'Robert', 'White', '666-555-4444', '55443', 0),
+('nancy.green8@example.com', 'Complex#Pass987', 'Nancy', 'Green', '111-222-3333', '66778', 0),
+('david.hall9@example.com', 'SafePass321!', 'David', 'Hall', '999-888-7777', '77889', 0),
+('emma.taylor10@example.com', 'RandomPass654$', 'Emma', 'Taylor', '333-444-5555', '88900', 0);
 
 -- TABLA CARRITO
 INSERT INTO carrito (cliente_id, articulo_cod, cantidad) VALUES
