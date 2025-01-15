@@ -116,6 +116,7 @@
   import { EyeIcon, EyeOffIcon } from 'lucide-vue-next';
   import { userStore } from '@/stores/userStore';
   import { Usuario, registrarUsuario } from '@/repository/cliente.js';
+  import router from '@/router'
 
   const schema = yup.object().shape({
     email: yup
@@ -187,7 +188,7 @@
       user.setUid(userData.getId());
       user.setEmail(userData.getEmail());
       user.setRol(userData.getRol());
-      user.setName(userData.getName());
+      user.setName(userData.getNombre());
 
       router.push('/');
     } catch (error) {

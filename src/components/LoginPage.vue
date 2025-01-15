@@ -68,13 +68,12 @@ const onSubmit = async (values) => {
     console.log(values)
     const user = userStore()
 
-    const uid = await loginUsuario(values.email, values.password)
+    const userData = await loginUsuario(values.email, values.password)
+    if (userData) {
 
-    if (uid) {
-      const userData = await obtenerUsuario(uid)
-
-      user.setUid(uid)
-      user.setEmail(userData.email)
+      user.setUid(userData.getId())
+      user.setEmail(userData.getEmail())
+      user.setName(userData.getNombre())
       if (userData.rol === 1) {
         user.setRol('admin')
       } else {
