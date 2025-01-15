@@ -54,9 +54,7 @@ const schema = yup.object().shape({
     .string()
     .email('Correo electrónico inválido')
     .required('El correo electrónico es obligatorio'),
-  password: yup
-    .string()
-    .required('La contraseña es obligatoria'),
+  password: yup.string().required('La contraseña es obligatoria'),
 })
 
 const showPassword = ref(false)
@@ -66,27 +64,28 @@ const togglePassword = () => {
 }
 
 const onSubmit = async (values) => {
-    try{
-        console.log(values)
-        const user = userStore()
-        
-        const uid = await loginUsuario(values.email, values.password)
+  try {
+    console.log(values)
+    const user = userStore()
 
-        if (uid) {
+    const uid = await loginUsuario(values.email, values.password)
 
-            const userData = await obtenerUsuario(uid)
+    if (uid) {
+      const userData = await obtenerUsuario(uid)
 
-            user.setUid(uid)
-            user.setEmail(userData.email)
-            user.setRol(userData.rol)
-            user.setName(userData.name)
-            router.push('/')
-        }
-
-    } catch (error) {
-        console.log(error)
+      user.setUid(uid)
+      user.setEmail(userData.email)
+      if (userData.rol === 1) {
+        user.setRol('admin')
+      } else {
+        user.setRol('user')
+      }
+      user.setName(userData.name)
+      router.push('/')
     }
-
+  } catch (error) {
+    console.log(error)
+  }
 }
 </script>
 

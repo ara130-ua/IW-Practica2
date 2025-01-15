@@ -59,6 +59,9 @@ const logOut = async () => {
           <li>
             <RouterLink to="/login" @click="logOut">Cerrar sesión</RouterLink>
           </li>
+          <li v-if="user.isAdmin">
+            <RouterLink to="/office" @click="toggleDropdown">Admin</RouterLink>
+          </li>
         </ul>
       </div>
     </div>
