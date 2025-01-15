@@ -58,21 +58,6 @@ const router = createRouter({
       name: 'office',
       component: BackofficePanel,
     },
-    {
-      path: '/office/pedidos',
-      name: 'pedidos',
-      component: GestionPedidos,
-    },
-    {
-      path: '/office/articulos',
-      name: 'articulos',
-      component: GestionArticulos,
-    },
-    {
-      path: '/office/categorias',
-      name: 'categorias',
-      component: GestionCategorias,
-    },
   ],
 })
 

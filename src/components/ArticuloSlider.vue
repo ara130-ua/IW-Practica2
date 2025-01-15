@@ -18,8 +18,6 @@ export default defineComponent({
     ArticuloCard,
   },
   async setup() {
-    onMounted(() => {})
-
     return {
       articulos: await obtenerArticulos(),
       modules: [Navigation, Pagination],
@@ -33,9 +31,6 @@ export default defineComponent({
   methods: {
     setSwiperRef(swiper) {
       this.swiperRef = swiper
-    },
-    mostrarDatos() {
-      console.log(articulos)
     },
     irDetalles(id) {
       var articuloStore = useArticuloStore()
