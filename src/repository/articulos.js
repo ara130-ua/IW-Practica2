@@ -286,6 +286,58 @@ export async function addArticulo({
   }
 }
 
+export async function comprarArticulo(cliente_id, articulo_cod, cantidad, modo_entrega, tienda_id, estado) {
+  try {
+      // Obtener datos del artículo
+      const { data: articuloData, error: articuloError } = await supabase
+          .from('articulo')
+          .select('precio')
+          .eq('cod', articulo_cod)
+          .single();
+
+      if (articuloError) 
+        throw articuloError;
+
+      const precio = articuloData.precio;
+      const importe = precio * cantidad;
+
+      // Crear el pedido
+      const { data: pedidoData, error: pedidoError } = await supabase
+          .from('pedido')
+          .insert({
+              fecha: new Date().toISOString().split('T')[0],
+              importe: importe,
+              modo_entrega: modo_entrega, // Puedes ajustarlo según sea necesario
+              gastos_envio: 5, // Esto hay que ajustarlo
+              estado: estado,
+              cliente_id: cliente_id,
+              tienda_id: tienda_id, // Ajustar según la lógica de negocio
+          })
+          .select('id');
+
+      if (pedidoError) throw pedidoError;
+
+      const pedidoId = pedidoData[0].id;
+
+      // Crear la línea del pedido
+      const { error: lineaError } = await supabase
+          .from('lin_ped')
+          .insert({
+              pedido_id: pedidoId,
+              articulo_cod: articulo_cod,
+              cantidad: cantidad,
+              precio: precio,
+          });
+
+      if (lineaError) 
+        throw lineaError;
+
+      return { success: true, pedidoId };
+  } catch (err) {
+      console.error('Error al comprar el artículo:', err);
+      throw err;
+  }
+}
 /*
 //crearArticulo() referencia, nombre, descripcion-corta, descripcion-larga, detalles, modelo, talla, precio, descuento, marca_id, categoria_id, subcategoria_id
 export async function crearArticulo(articulo) {

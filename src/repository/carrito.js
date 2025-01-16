@@ -1,4 +1,5 @@
 import { supabase } from '@/utils/supabase'
+import { Pedido } from './pedido'
 
 export async function obtenerCarrito(clienteId) {
   try {
@@ -122,5 +123,102 @@ export async function eliminarArticuloDelCarrito(clienteId, articuloId) {
   } catch (error) {
     console.error('Error al eliminar el artículo del carrito:', error)
     return null
+  }
+}
+
+export async function vaciarCarrito(clienteId) {
+  try {
+    const { data, error } = await supabase
+      .from('carrito')
+      .delete()
+      .eq('cliente_id', clienteId)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error al vaciar el carrito:', error)
+    return null
+  }
+}
+
+export async function calcularTotalCarrito(cliente_id) {
+  try {
+      const { data, error } = await supabase
+          .from('carrito')
+          .select('articulo_cod, cantidad, articulo(precio)')
+          .eq('cliente_id', cliente_id);
+
+      if (error) throw error;
+
+      const total = data.reduce((acc, item) => {
+          const precio = item.articulo.precio || 0;
+          return acc + precio * item.cantidad;
+      }, 0);
+
+      return total;
+  } catch (err) {
+      console.error('Error calculando el total del carrito:', err);
+      throw err;
+  }
+}
+
+// Función para crear un pedido y sus líneas asociadas
+export async function comprarCarrito(pedido) {
+  try {
+      // Calcular el total del carrito
+      const totalCarrito = await calcularTotalCarrito(pedido.getClienteId());
+
+      // Crear el pedido
+      const { data: pedidoData, error: pedidoError } = await supabase
+          .from('pedido')
+          .insert({
+              fecha: new Date().toISOString().split('T')[0],
+              importe: totalCarrito,
+              modo_entrega: pedido.getModoEntrega(),
+              gastos_envio: pedido.getGastosEnvio(),
+              estado: pedido.getEstado(),
+              cliente_id: pedido.getClienteId(),
+              tienda_id: pedido.getTiendaId(),
+          })
+          .select('id'); //Recupera el id del pedido
+
+      if (pedidoError) 
+        throw pedidoError;
+
+      const pedidoId = pedidoData[0].id;
+
+      // Obtener los artículos del carrito
+      const { data: carritoData, error: carritoError } = await supabase
+          .from('carrito')
+          .select('articulo_cod, cantidad, articulo(precio)')
+          .eq('cliente_id', pedido.getClienteId());
+
+      if (carritoError) 
+        throw carritoError;
+
+      // Crear las líneas del pedido
+      const lineasPedido = carritoData.map((item) => ({
+          pedido_id: pedidoId,
+          articulo_cod: item.articulo_cod,
+          cantidad: item.cantidad,
+          precio: item.articulo.precio,
+      }));
+
+      const { error: lineasError } = await supabase
+          .from('lin_ped')
+          .insert(lineasPedido);
+
+      if (lineasError) 
+        throw lineasError;
+
+      vaciarCarrito(pedido.getClienteId());
+
+      return { success: true, pedidoId };
+  } catch (err) {
+      console.error('Error al comprar el carrito:', err);
+      throw err;
   }
 }
