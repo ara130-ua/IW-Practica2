@@ -20,7 +20,7 @@ var articulo = ref({
   talla: '',
   precio: 0,
   descuento: 0,
-  imagen: '/placeholder.svg?height=300&width=300',
+  imagen: '',
 })
 
 var esFavorito = ref(false)
@@ -37,6 +37,7 @@ const precioFinal = computed(() =>
 // Cargar detalles del artículo al montar el componente
 onMounted(async () => {
   articulo.value = await getArticuloById(router.currentRoute.value.params.id)
+  console.log(articulo.value)
 })
 
 // Métodos
@@ -90,7 +91,7 @@ const toggleFavorito = async () => {
 <template>
   <div class="detalles-articulo">
     <div class="imagen-producto">
-      <!-- <img :src="articulo.imagen" :alt="articulo.nombre" /> -->
+      <img :src="articulo.imagen" :alt="articulo.nombre" />
     </div>
     <div class="info-producto">
       <h1>{{ articulo.nombre }}</h1>
