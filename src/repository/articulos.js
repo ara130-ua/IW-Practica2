@@ -16,6 +16,7 @@ export class Articulo {
     marca_id,
     categoria_id,
     subcategoria_id,
+    imagen,
   ) {
     this.id = id
     this.nombre = nombre
@@ -29,6 +30,7 @@ export class Articulo {
     this.marca_id = marca_id
     this.categoria_id = categoria_id
     this.subcategoria_id = subcategoria_id
+    this.imagen = imagen
   }
 
   // Getters
@@ -140,12 +142,13 @@ export async function obtenerArticulosCategoria() {
         nombre,
         descripcion_corta,
         modelo,
+        imagen,
         talla,
         precio,
         categoria:categoria_id (nombre)
       `,
       )
-      .limit(50)
+      .order('cod', { ascending: true }) // Ordenar por el campo 'cod'
 
     if (error) {
       throw error
@@ -155,7 +158,7 @@ export async function obtenerArticulosCategoria() {
         nombre: articulo.nombre,
         price: articulo.precio,
         modelo: articulo.modelo,
-        imagen: 'https://via.placeholder.com/150',
+        imagen: articulo.imagen,
         descripcion_corta: articulo.descripcion_corta,
         talla: articulo.talla,
         categoria: articulo.categoria?.nombre || 'Sin categoría',
@@ -170,17 +173,22 @@ export async function obtenerArticulosCategoria() {
 // Información de los artículos, cada artículo tiene id, nombre, descripción, precio, stock
 export async function obtenerArticulos() {
   try {
-    const { data, error } = await supabase.from('articulo').select('*').limit(50)
+    const { data, error } = await supabase
+      .from('articulo')
+      .select('*')
+      .order('cod', { ascending: true })
+      .limit(20)
 
     if (error) {
       throw error
     } else {
+      console.log(data)
       return data.map((articulo) => ({
         id: articulo.cod,
         nombre: articulo.nombre,
         price: articulo.precio,
         modelo: articulo.modelo,
-        imagen: 'https://via.placeholder.com/150',
+        imagen: articulo.imagen,
         descripcion_corta: articulo.descripcion_corta,
         talla: articulo.talla,
       }))
@@ -210,6 +218,7 @@ export async function getArticuloById(id) {
         data[0].marca_id,
         data[0].categoria_id,
         data[0].subcategoria_id,
+        data[0].imagen,
       )
     }
   } catch (error) {

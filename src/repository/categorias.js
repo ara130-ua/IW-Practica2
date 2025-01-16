@@ -26,34 +26,39 @@ export async function getCategoriaId(nombre) {
 
 export async function obtenerCategoriasConConteo() {
   try {
-    const { data, error } = await supabase.rpc('execute_sql', {
-      sql_query: `
-          SELECT 
-            c.id AS categoria_id,
-            c.nombre AS categoria_nombre,
-            COUNT(a.cod) AS numero_articulos
-          FROM 
-            public.categoria c
-          LEFT JOIN 
-            public.articulo a ON c.id = a.categoria_id
-          GROUP BY 
-            c.id, c.nombre
-          ORDER BY 
-            c.nombre;
-        `,
-    })
+    const { data, error } = await supabase.from('categoria').select(`
+          id,
+          nombre
+        `)
 
     if (error) {
       throw error
     }
 
     return data.map((categoria) => ({
-      id: categoria.categoria_id,
-      nombre: categoria.categoria_nombre,
-      numeroArticulos: categoria.numero_articulos,
+      id: categoria.id,
+      nombre: categoria.nombre,
     }))
   } catch (error) {
     console.error('Error al obtener las categorías:', error)
+    return null
+  }
+}
+
+export async function agregarCategoria(nombre) {
+  try {
+    const { data, error } = await supabase
+      .from('categoria') // Nombre de la tabla
+      .insert([{ nombre }]) // Inserta una nueva fila con el nombre proporcionado
+
+    if (error) {
+      throw error
+    }
+
+    console.log('Categoría agregada correctamente:', data)
+    return data // Devuelve la categoría añadida
+  } catch (error) {
+    console.error('Error al agregar la categoría:', error)
     return null
   }
 }

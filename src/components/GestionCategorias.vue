@@ -15,11 +15,6 @@
             <button @click="eliminarCategoria(categoria.id)" class="btn-icon delete">🗑️</button>
           </div>
         </div>
-        <p class="categoria-desc">{{ categoria.descripcion }}</p>
-        <div class="categoria-stats">
-          <span>{{ categoria.articulos }} artículos</span>
-          <span>Creada: {{ formatDate(categoria.fechaCreacion) }}</span>
-        </div>
       </div>
     </div>
 
@@ -47,7 +42,7 @@
 </template>
 
 <script>
-import { obtenerCategoriasConConteo } from '@/repository/categorias'
+import { agregarCategoria, obtenerCategoriasConConteo } from '@/repository/categorias'
 
 export default {
   name: 'GestionCategorias',
@@ -79,7 +74,7 @@ export default {
         this.categorias = this.categorias.filter((c) => c.id !== id)
       }
     },
-    guardarCategoria() {
+    async guardarCategoria() {
       if (this.editingCategoria) {
         const index = this.categorias.findIndex((c) => c.id === this.editingCategoria.id)
         this.categorias[index] = {
@@ -93,6 +88,7 @@ export default {
           articulos: 0,
           fechaCreacion: new Date(),
         })
+        await agregarCategoria(this.formCategoria.nombre)
       }
       this.showModal = false
       this.editingCategoria = null

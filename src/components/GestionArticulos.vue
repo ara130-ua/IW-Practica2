@@ -30,7 +30,7 @@
           <td>#{{ articulo.id }}</td>
           <td>{{ articulo.nombre }}</td>
           <td>{{ articulo.categoria }}</td>
-          <td>{{ formatPrice(articulo.price) }}</td>
+          <td>{{ articulo.price }}</td>
           <td>
             <button @click="editarArticulo(articulo)" class="btn-action">Editar</button>
             <button @click="eliminarArticulo(articulo.id)" class="btn-action delete">
@@ -113,11 +113,13 @@ export default {
       this.categorias.push(categoria.nombre)
     }
     this.articulos = await obtenerArticulosCategoria()
+    console.log(this.articulos)
   },
   methods: {
+    /*
     formatPrice(price) {
       return `$${price.toFixed(2)}`
-    },
+    },*/
     editarArticulo(articulo) {
       this.editingArticulo = articulo
       this.formArticulo = { ...articulo }
