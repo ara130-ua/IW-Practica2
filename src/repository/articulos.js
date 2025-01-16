@@ -1,5 +1,6 @@
 //import { conexionbbdd } from '../conexionbbdd.js'
 import { supabase } from '@/utils/supabase'
+import { getCategoriaId } from './categorias'
 
 export class Articulo {
   constructor(
@@ -129,6 +130,44 @@ export class Articulo {
 }
 
 // Información de los artículos, cada artículo tiene id, nombre, descripción, precio, stock
+export async function obtenerArticulosCategoria() {
+  try {
+    const { data, error } = await supabase
+      .from('articulo')
+      .select(
+        `
+        cod,
+        nombre,
+        descripcion_corta,
+        modelo,
+        talla,
+        precio,
+        categoria:categoria_id (nombre)
+      `,
+      )
+      .limit(50)
+
+    if (error) {
+      throw error
+    } else {
+      return data.map((articulo) => ({
+        id: articulo.cod,
+        nombre: articulo.nombre,
+        price: articulo.precio,
+        modelo: articulo.modelo,
+        imagen: 'https://via.placeholder.com/150',
+        descripcion_corta: articulo.descripcion_corta,
+        talla: articulo.talla,
+        categoria: articulo.categoria?.nombre || 'Sin categoría',
+      }))
+    }
+  } catch (error) {
+    console.error('Error al obtener los artículos:', error)
+    return null
+  }
+}
+
+// Información de los artículos, cada artículo tiene id, nombre, descripción, precio, stock
 export async function obtenerArticulos() {
   try {
     const { data, error } = await supabase.from('articulo').select('*').limit(50)
@@ -177,6 +216,76 @@ export async function getArticuloById(id) {
     return null
   }
 }
+
+export async function actualizarArticulo(id, nombre, categoria, precio) {
+  const categoria_id = await getCategoriaId(categoria)
+  try {
+    const { data, error } = await supabase
+      .from('articulo')
+      .update({
+        nombre: nombre,
+        categoria_id: categoria_id,
+        precio: precio,
+      })
+      .eq('cod', id)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error al actualizar el artículo:', error)
+    return null
+  }
+}
+
+export async function eliminarArticulo(id) {
+  try {
+    const { data, error } = await supabase.from('articulo').delete().eq('cod', id)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error al eliminar el artículo:', error)
+    return null
+  }
+}
+
+export async function addArticulo({
+  nombre,
+  categoria_id,
+  precio,
+  descripcion_corta = null,
+  talla = null,
+  modelo = null,
+}) {
+  try {
+    const { data, error } = await supabase.from('articulo').insert([
+      {
+        nombre: nombre,
+        categoria_id: categoria_id,
+        precio: precio,
+        descripcion_corta: descripcion_corta,
+        talla: talla,
+        modelo: modelo,
+      },
+    ])
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error al añadir el artículo:', error)
+    return null
+  }
+}
+
 /*
 //crearArticulo() referencia, nombre, descripcion-corta, descripcion-larga, detalles, modelo, talla, precio, descuento, marca_id, categoria_id, subcategoria_id
 export async function crearArticulo(articulo) {

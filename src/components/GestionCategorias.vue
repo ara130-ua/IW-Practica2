@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import { obtenerCategoriasConConteo } from '@/repository/categorias'
+
 export default {
   name: 'GestionCategorias',
   data() {
@@ -57,24 +59,11 @@ export default {
         nombre: '',
         descripcion: '',
       },
-      categorias: [
-        {
-          id: '1',
-          nombre: 'Ropa Deportiva',
-          descripcion: 'Todo tipo de ropa para práctica deportiva',
-          articulos: 45,
-          fechaCreacion: new Date('2024-01-01'),
-        },
-        {
-          id: '2',
-          nombre: 'Calzado',
-          descripcion: 'Zapatillas y calzado deportivo',
-          articulos: 30,
-          fechaCreacion: new Date('2024-01-01'),
-        },
-        // Más categorías...
-      ],
+      categorias: [],
     }
+  },
+  async created() {
+    this.categorias = await obtenerCategoriasConConteo()
   },
   methods: {
     formatDate(date) {

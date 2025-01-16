@@ -1,5 +1,64 @@
-import { conexionbbdd } from "../conexionbbdd.js";
+import { supabase } from '@/utils/supabase'
 
+export async function getCategorias() {
+  try {
+    const { data, error } = await supabase.from('categoria').select('*')
+    if (error) throw error
+    return data.map((categoria) => ({
+      nombre: categoria.nombre,
+    }))
+  } catch (error) {
+    console.error('Error en getCategorias:', error)
+    throw error
+  }
+}
+
+export async function getCategoriaId(nombre) {
+  try {
+    const { data, error } = await supabase.from('categoria').select('id').eq('nombre', nombre)
+    if (error) throw error
+    return data.id
+  } catch (error) {
+    console.error('Error en getCategoriaId:', error)
+    throw error
+  }
+}
+
+export async function obtenerCategoriasConConteo() {
+  try {
+    const { data, error } = await supabase.rpc('execute_sql', {
+      sql_query: `
+          SELECT 
+            c.id AS categoria_id,
+            c.nombre AS categoria_nombre,
+            COUNT(a.cod) AS numero_articulos
+          FROM 
+            public.categoria c
+          LEFT JOIN 
+            public.articulo a ON c.id = a.categoria_id
+          GROUP BY 
+            c.id, c.nombre
+          ORDER BY 
+            c.nombre;
+        `,
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return data.map((categoria) => ({
+      id: categoria.categoria_id,
+      nombre: categoria.categoria_nombre,
+      numeroArticulos: categoria.numero_articulos,
+    }))
+  } catch (error) {
+    console.error('Error al obtener las categorías:', error)
+    return null
+  }
+}
+
+/*
 // Gestionar categorías
 export async function anadirCategoria(categoria) {
     try {
@@ -133,3 +192,4 @@ export async function getProductBySubcategoryId(id) {
         throw error;
     }
 }
+*/

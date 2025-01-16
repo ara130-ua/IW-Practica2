@@ -108,3 +108,41 @@ export async function getPedidos() {
       ),
   )
 }
+
+export async function updateEstadoPedido(pedido_id, estado) {
+  const { data, error } = await supabase.from('pedido').update({ estado }).match({ id: pedido_id })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return data
+}
+
+export async function fetchArticuloNombreYCantidad(pedidoId) {
+  const { data, error } = await supabase.rpc('execute_sql', {
+    sql_query: `
+        SELECT 
+          a.cod AS id,
+          a.nombre AS articulo_nombre,
+          lp.cantidad
+        FROM 
+          public.lin_ped lp
+        JOIN 
+          public.articulo a ON lp.articulo_cod = a.cod
+        WHERE 
+          lp.pedido_id = ${pedidoId};
+      `,
+  })
+
+  if (error) {
+    console.error('Error fetching data:', error)
+    return []
+  }
+  console.log('data:', data)
+  return data.map((row) => ({
+    id: row.id,
+    articulo_nombre: row.articulo_nombre,
+    cantidad: row.cantidad,
+  }))
+}

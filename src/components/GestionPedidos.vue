@@ -6,10 +6,9 @@
       <input type="text" v-model="search" placeholder="Buscar por ID o cliente..." />
       <select v-model="statusFilter">
         <option value="">Todos los estados</option>
-        <option value="pendiente">Pendiente</option>
+        <option value="procesando">Procesando</option>
         <option value="enviado">Enviado</option>
         <option value="entregado">Entregado</option>
-        <option value="cancelado">Cancelado</option>
       </select>
     </div>
 
@@ -49,10 +48,28 @@
       </tbody>
     </table>
   </div>
+  <div v-if="mostrarPopup" class="popup-overlay">
+    <div class="popup-content">
+      <h3>Detalles del Pedido #{{ pedidoSeleccionado.id }}</h3>
+      <p><strong>Cliente:</strong> {{ pedidoSeleccionado.cliente_id }}</p>
+      <p><strong>Fecha:</strong> {{ formatDate(pedidoSeleccionado.fecha) }}</p>
+      <p><strong>Total:</strong> {{ formatPrice(pedidoSeleccionado.importe) }}</p>
+      <p><strong>Estado:</strong> {{ pedidoSeleccionado.estado }}</p>
+      <!-- 
+      <p><strong>Productos:</strong></p>
+      <ul>
+        <li v-for="articulo in articulosPedido" :key="articulo.id">
+          {{ articulo.articulo_nombre }} - {{ articulo.cantidad }}
+        </li>
+      </ul>
+    -->
+      <button @click="cerrarPopup" class="btn-action">Cerrar</button>
+    </div>
+  </div>
 </template>
 
 <script>
-import { getPedidos } from '@/repository/pedido'
+import { fetchArticuloNombreYCantidad, getPedidos, updateEstadoPedido } from '@/repository/pedido'
 export default {
   name: 'GestionPedidos',
   data() {
@@ -68,6 +85,9 @@ export default {
           estado: 'pendiente',
         },
       ],
+      pedidoSeleccionado: null,
+      articulosPedido: [],
+      mostrarPopup: false,
     }
   },
   computed: {
@@ -99,12 +119,19 @@ export default {
       return `$${price.toFixed(2)}`
     },
     verDetalles(pedido) {
-      console.log('Ver detalles del pedido:', pedido)
-      // Implementar lógica para mostrar detalles
+      this.pedidoSeleccionado = pedido
+      //this.articulosPedido = fetchArticuloNombreYCantidad(pedido.id)
+      this.mostrarPopup = true
     },
-    actualizarEstado(pedido) {
-      // Implementar lógica para actualizar estado
-      console.log('Actualizar estado del pedido:', pedido)
+    async actualizarEstado(pedido) {
+      const estados = ['procesando', 'enviado', 'entregado']
+      const currentIndex = estados.indexOf(pedido.estado)
+      pedido.estado = estados[(currentIndex + 1) % estados.length]
+      await updateEstadoPedido(pedido.id, pedido.estado)
+    },
+    cerrarPopup() {
+      this.mostrarPopup = false
+      this.pedidoSeleccionado = null
     },
   },
 }
@@ -178,6 +205,11 @@ th {
   color: #721c24;
 }
 
+.status.procesando {
+  background-color: #e6f2ff;
+  color: #0056b3;
+}
+
 .btn-action {
   margin-right: 5px;
   padding: 6px 12px;
@@ -195,5 +227,24 @@ th {
 .btn-action:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 </style>
