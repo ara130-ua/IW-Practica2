@@ -35,7 +35,6 @@ export default defineComponent({
       var articuloStore = useArticuloStore()
       articuloStore.setArticuloID(id)
       this.$router.push('detalles/' + id)
-      console.log('articulos: ', this.articulos)
     },
   },
 })

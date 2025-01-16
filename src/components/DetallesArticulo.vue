@@ -1,5 +1,10 @@
 <script setup>
 import { getArticuloById } from '@/repository/articulos'
+import {
+  addListaDeDeseos,
+  eliminarListaDeDeseos,
+  estaEnListaDeDeseos,
+} from '@/repository/favoritos'
 import { userStore } from '@/stores/userStore'
 import { onMounted } from 'vue'
 import { ref, computed } from 'vue'
@@ -19,6 +24,7 @@ var articulo = ref({
 
 var esFavorito = ref(false)
 const router = useRouter()
+const user = userStore()
 
 // Computed para el precio final
 const precioFinal = computed(() =>
@@ -29,10 +35,7 @@ const precioFinal = computed(() =>
 
 // Cargar detalles del artículo al montar el componente
 onMounted(async () => {
-  console.log('Cargando detalles del artículo...')
-  console.log('La id de la ruta es:', router.currentRoute.value.params.id)
   articulo.value = await getArticuloById(router.currentRoute.value.params.id)
-  console.log('Detalles del artículo:', articulo.value)
 })
 
 // Métodos
@@ -55,10 +58,16 @@ const agregarAlCarrito = () => {
   // Lógica para añadir al carrito
 }
 
-const toggleFavorito = () => {
-  esFavorito.value = !esFavorito.value
-  alert(esFavorito.value ? 'Añadido a favoritos' : 'Quitado de favoritos')
-  // Lógica para manejar favoritos
+const toggleFavorito = async () => {
+  //Revisar si el artículo es favorito o no
+  esFavorito.value = await estaEnListaDeDeseos(user.uid, articulo.value.id)
+  if (!esFavorito.value) {
+    alert('Añadido a favoritos')
+    await addListaDeDeseos(user.uid, articulo.value.id)
+  } else {
+    alert('Quitado de favoritos')
+    await eliminarListaDeDeseos(user.uid, articulo.value.id)
+  }
 }
 </script>
 
@@ -187,7 +196,7 @@ h1 {
 
 .btn-favorito:hover,
 .btn-favorito.es-favorito {
-  background-color: #e53e3e;
+  background-color: #33c2df;
 }
 
 .sr-only {

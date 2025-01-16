@@ -19,50 +19,43 @@
         >
           ×
         </button>
+        <button @click="irDetalles(articulo.id)">Detalles</button>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+import { eliminarListaDeDeseos, obtenerListaDeseos } from '@/repository/favoritos'
+import router from '@/router'
+import { userStore } from '@/stores/userStore'
+
 export default {
   name: 'ArticulosFavoritos',
+  setup() {},
   data() {
     return {
-      favoritos: [
-        {
-          id: 1,
-          nombre: 'Camiseta Casual',
-          descripcion: 'Camiseta de algodón suave y cómoda.',
-          precio: 29.99,
-          imagen: '/placeholder.svg?height=100&width=100',
-        },
-        {
-          id: 2,
-          nombre: 'Pantalón Vaquero',
-          descripcion: 'Pantalón vaquero clásico de alta calidad.',
-          precio: 59.99,
-          imagen: '/placeholder.svg?height=100&width=100',
-        },
-        {
-          id: 3,
-          nombre: 'Zapatillas Deportivas',
-          descripcion: 'Zapatillas cómodas para todo tipo de actividades.',
-          precio: 89.99,
-          imagen: '/placeholder.svg?height=100&width=100',
-        },
-      ],
+      favoritos: [],
     }
+  },
+  async created() {
+    const user = userStore()
+    this.favoritos = await obtenerListaDeseos(user.uid)
   },
   methods: {
     formatPrecio(precio) {
       return `$${precio.toFixed(2)}`
     },
-    eliminarFavorito(id) {
+    async eliminarFavorito(id) {
       // Eliminar el artículo de la lista de favoritos
+      const user = userStore()
+      await eliminarListaDeDeseos(user.uid, id)
       this.favoritos = this.favoritos.filter((articulo) => articulo.id !== id)
       // Aquí se podría agregar lógica adicional, como actualizar el estado en un store o enviar una petición al servidor
       alert(`Artículo con ID ${id} eliminado de favoritos`)
+    },
+    irDetalles(id) {
+      router.push(`/detalles/${id}`)
     },
   },
 }
