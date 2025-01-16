@@ -1,7 +1,6 @@
 <script>
-import { defineComponent, onMounted } from 'vue'
+import { defineComponent } from 'vue'
 import ArticuloCard from '@/components/ArticuloCard.vue'
-import { articulos } from '@/resources/data/articulosData'
 import { obtenerArticulos } from '@/repository/articulos'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination } from 'swiper/modules'
@@ -18,8 +17,6 @@ export default defineComponent({
     ArticuloCard,
   },
   async setup() {
-    onMounted(() => {})
-
     return {
       articulos: await obtenerArticulos(),
       modules: [Navigation, Pagination],
@@ -33,9 +30,6 @@ export default defineComponent({
   methods: {
     setSwiperRef(swiper) {
       this.swiperRef = swiper
-    },
-    mostrarDatos() {
-      console.log(articulos)
     },
     irDetalles(id) {
       var articuloStore = useArticuloStore()

@@ -19,28 +19,18 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>Imagen</th>
           <th>Nombre</th>
           <th>Categoría</th>
           <th>Precio</th>
-          <th>Stock</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="articulo in filteredArticulos" :key="articulo.id">
           <td>#{{ articulo.id }}</td>
-          <td>
-            <img :src="articulo.imagen" :alt="articulo.nombre" class="product-img" />
-          </td>
           <td>{{ articulo.nombre }}</td>
           <td>{{ articulo.categoria }}</td>
-          <td>{{ formatPrice(articulo.precio) }}</td>
-          <td>
-            <span :class="{ 'stock-low': articulo.stock < 10 }">
-              {{ articulo.stock }}
-            </span>
-          </td>
+          <td>{{ formatPrice(articulo.price) }}</td>
           <td>
             <button @click="editarArticulo(articulo)" class="btn-action">Editar</button>
             <button @click="eliminarArticulo(articulo.id)" class="btn-action delete">
@@ -70,15 +60,7 @@
           </div>
           <div class="form-group">
             <label>Precio</label>
-            <input type="number" v-model="formArticulo.precio" step="0.01" required />
-          </div>
-          <div class="form-group">
-            <label>Stock</label>
-            <input type="number" v-model="formArticulo.stock" required />
-          </div>
-          <div class="form-group">
-            <label>Imagen URL</label>
-            <input type="url" v-model="formArticulo.imagen" required />
+            <input type="number" v-model="formArticulo.price" step="0.01" required />
           </div>
           <div class="modal-actions">
             <button type="submit" class="btn-primary">Guardar</button>
@@ -91,6 +73,14 @@
 </template>
 
 <script>
+import {
+  obtenerArticulosCategoria,
+  actualizarArticulo,
+  eliminarArticulo,
+  addArticulo,
+} from '@/repository/articulos'
+import { getCategorias } from '@/repository/categorias'
+
 export default {
   name: 'GestionArticulos',
   data() {
@@ -102,22 +92,10 @@ export default {
       formArticulo: {
         nombre: '',
         categoria: '',
-        precio: 0,
-        stock: 0,
-        imagen: '',
+        price: 0,
       },
-      articulos: [
-        {
-          id: '1',
-          nombre: 'Camiseta Deportiva',
-          categoria: 'Ropa',
-          precio: 29.99,
-          stock: 50,
-          imagen: '/placeholder.svg?height=50&width=50',
-        },
-        // Más artículos...
-      ],
-      categorias: ['Ropa', 'Calzado', 'Accesorios', 'Equipamiento'],
+      articulos: [],
+      categorias: [],
     }
   },
   computed: {
@@ -129,6 +107,13 @@ export default {
       })
     },
   },
+  async created() {
+    const categoriasAux = await getCategorias()
+    for (let categoria of categoriasAux) {
+      this.categorias.push(categoria.nombre)
+    }
+    this.articulos = await obtenerArticulosCategoria()
+  },
   methods: {
     formatPrice(price) {
       return `$${price.toFixed(2)}`
@@ -138,20 +123,23 @@ export default {
       this.formArticulo = { ...articulo }
       this.showModal = true
     },
-    eliminarArticulo(id) {
+    async eliminarArticulo(id) {
       if (confirm('¿Está seguro de eliminar este artículo?')) {
         this.articulos = this.articulos.filter((a) => a.id !== id)
+        await eliminarArticulo(id)
       }
     },
     guardarArticulo() {
       if (this.editingArticulo) {
-        const index = this.articulos.findIndex((a) => a.id === this.editingArticulo.id)
-        this.articulos[index] = { ...this.formArticulo }
+        const id = this.articulos.findIndex((a) => a.id === this.editingArticulo.id)
+        //this.articulos[index] = { ...this.formArticulo }
+        actualizarArticulo(id + 1, this.formArticulo)
       } else {
-        this.articulos.push({
+        /*this.articulos.push({
           ...this.formArticulo,
           id: (this.articulos.length + 1).toString(),
-        })
+        })*/
+        addArticulo(this.formArticulo)
       }
       this.showModal = false
       this.editingArticulo = null
@@ -159,8 +147,6 @@ export default {
         nombre: '',
         categoria: '',
         precio: 0,
-        stock: 0,
-        imagen: '',
       }
     },
   },
@@ -181,13 +167,6 @@ export default {
 .filters {
   display: flex;
   gap: 10px;
-}
-
-.product-img {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 4px;
 }
 
 .stock-low {

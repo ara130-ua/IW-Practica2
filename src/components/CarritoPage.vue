@@ -11,6 +11,7 @@
           <img :src="producto.imagen" :alt="producto.nombre" class="producto-imagen" />
           <div class="producto-info">
             <h2>{{ producto.nombre }}</h2>
+            <p class="producto-descripcion">{{ producto.descripcion }}</p>
             <p class="producto-precio">{{ formatPrecio(producto.precio) }}</p>
           </div>
           <div class="producto-cantidad">
@@ -48,33 +49,19 @@
 </template>
 
 <script>
+import {
+  actualizarCantidad,
+  eliminarArticuloDelCarrito,
+  obtenerCarrito,
+} from '@/repository/carrito'
+import router from '@/router'
+import { userStore } from '@/stores/userStore'
+
 export default {
   name: 'CarritoCompras',
   data() {
     return {
-      productosEnCarrito: [
-        {
-          id: 1,
-          nombre: 'Camiseta Casual',
-          precio: 29.99,
-          cantidad: 2,
-          imagen: '/placeholder.svg?height=100&width=100',
-        },
-        {
-          id: 2,
-          nombre: 'Pantalón Vaquero',
-          precio: 59.99,
-          cantidad: 1,
-          imagen: '/placeholder.svg?height=100&width=100',
-        },
-        {
-          id: 3,
-          nombre: 'Zapatillas Deportivas',
-          precio: 89.99,
-          cantidad: 1,
-          imagen: '/placeholder.svg?height=100&width=100',
-        },
-      ],
+      productosEnCarrito: [],
     }
   },
   computed: {
@@ -84,20 +71,33 @@ export default {
       }, 0)
     },
   },
+  async created() {
+    const user = userStore()
+    this.productosEnCarrito = await obtenerCarrito(user.uid)
+  },
   methods: {
     formatPrecio(precio) {
       return `$${precio.toFixed(2)}`
     },
-    incrementarCantidad(producto) {
+    async incrementarCantidad(producto) {
       producto.cantidad++
+      const user = userStore()
+      await actualizarCantidad(user.uid, producto.id, producto.cantidad)
     },
-    decrementarCantidad(producto) {
+    async decrementarCantidad(producto) {
+      const user = userStore()
       if (producto.cantidad > 1) {
         producto.cantidad--
+        await actualizarCantidad(user.uid, producto.id, producto.cantidad)
+      } else {
+        this.eliminarProducto(producto.id)
       }
     },
-    eliminarProducto(id) {
+    async eliminarProducto(id) {
+      const user = userStore()
       this.productosEnCarrito = this.productosEnCarrito.filter((producto) => producto.id !== id)
+      await eliminarArticuloDelCarrito(user.uid, id)
+      alert('Producto eliminado del carrito')
     },
     comprarCarrito() {
       // Aquí iría la lógica para procesar la compra
@@ -106,7 +106,7 @@ export default {
     },
     irATienda() {
       // Aquí iría la lógica para navegar a la página de la tienda
-      alert('Navegando a la tienda...')
+      router.push('/')
     },
   },
 }
@@ -173,6 +173,12 @@ h1 {
   font-size: 18px;
   margin: 0 0 5px 0;
   color: #333;
+}
+
+.producto-descripcion {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
 }
 
 .producto-precio {

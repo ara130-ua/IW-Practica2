@@ -1,5 +1,171 @@
 //import { conexionbbdd } from '../conexionbbdd.js'
 import { supabase } from '@/utils/supabase'
+import { getCategoriaId } from './categorias'
+
+export class Articulo {
+  constructor(
+    id,
+    nombre,
+    descripcion,
+    descripcion_larga,
+    detalles,
+    modelo,
+    talla,
+    precio,
+    descuento,
+    marca_id,
+    categoria_id,
+    subcategoria_id,
+  ) {
+    this.id = id
+    this.nombre = nombre
+    this.descripcion = descripcion
+    this.descripcion_larga = descripcion_larga
+    this.detalles = detalles
+    this.modelo = modelo
+    this.talla = talla
+    this.precio = precio
+    this.descuento = descuento
+    this.marca_id = marca_id
+    this.categoria_id = categoria_id
+    this.subcategoria_id = subcategoria_id
+  }
+
+  // Getters
+  getId() {
+    return this.id
+  }
+
+  getNombre() {
+    return this.nombre
+  }
+
+  getDescripcion() {
+    return this.descripcion
+  }
+
+  getDescripcionLarga() {
+    return this.descripcion_larga
+  }
+
+  getDetalles() {
+    return this.detalles
+  }
+
+  getModelo() {
+    return this.modelo
+  }
+
+  getTalla() {
+    return this.talla
+  }
+
+  getPrecio() {
+    return this.precio
+  }
+
+  getDescuento() {
+    return this.descuento
+  }
+
+  getMarcaId() {
+    return this.marca_id
+  }
+
+  getCategoriaId() {
+    return this.categoria_id
+  }
+
+  getSubcategoriaId() {
+    return this.subcategoria_id
+  }
+
+  setId(id) {
+    this.id = id
+  }
+
+  setNombre(nombre) {
+    this.nombre = nombre
+  }
+
+  setDescripcion(descripcion) {
+    this.descripcion = descripcion
+  }
+
+  setDescripcionLarga(descripcion_larga) {
+    this.descripcion_larga = descripcion_larga
+  }
+
+  setDetalles(detalles) {
+    this.detalles = detalles
+  }
+
+  setModelo(modelo) {
+    this.modelo = modelo
+  }
+
+  setTalla(talla) {
+    this.talla = talla
+  }
+
+  setPrecio(precio) {
+    this.precio = precio
+  }
+
+  setDescuento(descuento) {
+    this.descuento = descuento
+  }
+
+  setMarcaId(marca_id) {
+    this.marca_id = marca_id
+  }
+
+  setCategoriaId(categoria_id) {
+    this.categoria_id = categoria_id
+  }
+
+  setSubcategoriaId(subcategoria_id) {
+    this.subcategoria_id = subcategoria_id
+  }
+}
+
+// Información de los artículos, cada artículo tiene id, nombre, descripción, precio, stock
+export async function obtenerArticulosCategoria() {
+  try {
+    const { data, error } = await supabase
+      .from('articulo')
+      .select(
+        `
+        cod,
+        nombre,
+        descripcion_corta,
+        modelo,
+        talla,
+        precio,
+        categoria:categoria_id (nombre)
+      `,
+      )
+      .limit(50)
+
+    if (error) {
+      throw error
+    } else {
+      return data.map((articulo) => ({
+        id: articulo.cod,
+        nombre: articulo.nombre,
+        price: articulo.precio,
+        modelo: articulo.modelo,
+        imagen: 'https://via.placeholder.com/150',
+        descripcion_corta: articulo.descripcion_corta,
+        talla: articulo.talla,
+        categoria: articulo.categoria?.nombre || 'Sin categoría',
+      }))
+    }
+  } catch (error) {
+    console.error('Error al obtener los artículos:', error)
+    return null
+  }
+}
 
 // Información de los artículos, cada artículo tiene id, nombre, descripción, precio, stock
 export async function obtenerArticulos() {
@@ -10,7 +176,7 @@ export async function obtenerArticulos() {
       throw error
     } else {
       return data.map((articulo) => ({
-        id: articulo.id,
+        id: articulo.cod,
         nombre: articulo.nombre,
         price: articulo.precio,
         modelo: articulo.modelo,
@@ -23,6 +189,103 @@ export async function obtenerArticulos() {
     return null
   }
 }
+
+export async function getArticuloById(id) {
+  try {
+    const { data, error } = await supabase.from('articulo').select('*').eq('cod', id)
+
+    if (error) {
+      throw error
+    } else {
+      return new Articulo(
+        data[0].cod,
+        data[0].nombre,
+        data[0].descripcion_corta,
+        data[0].descripcion_larga,
+        data[0].detalles,
+        data[0].modelo,
+        data[0].talla,
+        data[0].precio,
+        data[0].descuento,
+        data[0].marca_id,
+        data[0].categoria_id,
+        data[0].subcategoria_id,
+      )
+    }
+  } catch (error) {
+    return null
+  }
+}
+
+export async function actualizarArticulo(id, nombre, categoria, precio) {
+  const categoria_id = await getCategoriaId(categoria)
+  try {
+    const { data, error } = await supabase
+      .from('articulo')
+      .update({
+        nombre: nombre,
+        categoria_id: categoria_id,
+        precio: precio,
+      })
+      .eq('cod', id)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error al actualizar el artículo:', error)
+    return null
+  }
+}
+
+export async function eliminarArticulo(id) {
+  try {
+    const { data, error } = await supabase.from('articulo').delete().eq('cod', id)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error al eliminar el artículo:', error)
+    return null
+  }
+}
+
+export async function addArticulo({
+  nombre,
+  categoria_id,
+  precio,
+  descripcion_corta = null,
+  talla = null,
+  modelo = null,
+}) {
+  try {
+    const { data, error } = await supabase.from('articulo').insert([
+      {
+        nombre: nombre,
+        categoria_id: categoria_id,
+        precio: precio,
+        descripcion_corta: descripcion_corta,
+        talla: talla,
+        modelo: modelo,
+      },
+    ])
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error al añadir el artículo:', error)
+    return null
+  }
+}
+
 /*
 //crearArticulo() referencia, nombre, descripcion-corta, descripcion-larga, detalles, modelo, talla, precio, descuento, marca_id, categoria_id, subcategoria_id
 export async function crearArticulo(articulo) {

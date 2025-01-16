@@ -59,9 +59,9 @@
         <div class="form-group">
           <label for="gender">Género</label>
           <Field name="gender" as="select" id="gender">
-            <option value="male">Masculino</option>
-            <option value="female">Femenino</option>
-            <option value="other">Otro</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+            <option value="otro">Otro</option>
           </Field>
           <span class="error" v-if="errors.gender">{{ errors.gender }}</span>
         </div>
@@ -115,6 +115,8 @@
   import * as yup from 'yup';
   import { EyeIcon, EyeOffIcon } from 'lucide-vue-next';
   import { userStore } from '@/stores/userStore';
+  import { Usuario, registrarUsuario } from '@/repository/cliente.js';
+  import router from '@/router'
 
   const schema = yup.object().shape({
     email: yup
@@ -132,8 +134,8 @@
     dni: yup
       .string()
       .required('El DNI es obligatorio')
-      .matches(/^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'DNI inválido')
-      .matches(/^[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'NIE inválido'),
+      .matches(/^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'DNI inválido'),
+      //.matches(/^[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'NIE inválido'),
     gender: yup.string().required('El género es obligatorio'),
     firstName: yup.string().required('El nombre es obligatorio'),
     lastName: yup.string().required('Los apellidos son obligatorios'),
@@ -161,7 +163,42 @@
   };
 
   const onSubmit = async (values) => {
-    console.log(values);
+    
+    try {
+
+      const userData = await registrarUsuario(new Usuario(
+        0,
+        values.email,
+        values.firstName,
+        values.password,
+        values.lastName,
+        values.phone,
+        values.city,
+        0,
+        values.dni,
+        values.gender,
+        values.birthDate,
+        values.address,
+      ));
+
+      console.log(userData);
+
+      const user = userStore();
+
+      user.setUid(userData.getId());
+      user.setEmail(userData.getEmail());
+      if (userData.rol === 1) {
+        user.setRol('admin')
+      } else {
+        user.setRol('user')
+      }
+      user.setName(userData.getNombre());
+
+      router.push('/');
+    } catch (error) {
+      console.log(error);
+    }
+
   };
 </script>
 
