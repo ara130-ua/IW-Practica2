@@ -55,6 +55,11 @@ const comprar = () => {
 }
 
 const agregarAlCarrito = async () => {
+  if (!user.isLoggedIn) {
+    alert('Debes iniciar sesión para agregar al carrito')
+    router.push('/login')
+    return
+  }
   if (await articuloEnCarrito(user.uid, articulo.value.id)) {
     alert('El artículo ya está en el carrito')
     return
@@ -65,6 +70,11 @@ const agregarAlCarrito = async () => {
 }
 
 const toggleFavorito = async () => {
+  if (!user.isLoggedIn) {
+    alert('Debes iniciar sesión para agregar a favoritos')
+    router.push('/login')
+    return
+  }
   //Revisar si el artículo es favorito o no
   esFavorito.value = await estaEnListaDeDeseos(user.uid, articulo.value.id)
   if (!esFavorito.value) {
