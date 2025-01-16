@@ -263,16 +263,33 @@ export async function registrarUsuario(usuario){
  * @param {objeto usuario} usuario
  * @returns resultado de la consulta
  */
-export async function modificarUsuario(usuario){
-    return new Promise((resolve, reject) => {
-        conexionbbdd.query('UPDATE cliente SET nombre = ?, email = ?, password = ?, apellidos = ?, telefono = ?, apellidos = ?, postal = ? WHERE id = ?', [usuario.getNombre(), usuario.getEmail(), usuario.getPassword(), usuario.getApellidos(), usuario.getTelefono(), usuario.getPostal(), usuario.getId()], function (error, results) {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(results);
-            }
-        });
-    });
+export async function modificarUsuario(usuario) {
+    try {
+        const updatedData = {
+            nombre: usuario.getNombre(),
+            apellidos: usuario.getApellidos(),
+            telefono: usuario.getTelefono(),
+            postal: usuario.getPostal(),
+            direccion: usuario.getDireccion(),
+            genero: usuario.getGenero(),
+            fecha_nacimiento: new Date(usuario.getFechaNacimiento())
+        };
+
+
+        const { error } = await supabase
+            .from('cliente')
+            .update(updatedData)
+            .eq('id', usuario.getId());
+
+        if (error) {
+            throw error;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error modificando usuario:', error);
+        return null;
+    }
 }
 
 //Información del usuario, el usuario tiene id, email, nombre, clave, apellidos, telefono, postal, rol

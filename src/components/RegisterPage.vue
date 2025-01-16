@@ -59,9 +59,9 @@
         <div class="form-group">
           <label for="gender">Género</label>
           <Field name="gender" as="select" id="gender">
-            <option value="male">Masculino</option>
-            <option value="female">Femenino</option>
-            <option value="other">Otro</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+            <option value="otro">Otro</option>
           </Field>
           <span class="error" v-if="errors.gender">{{ errors.gender }}</span>
         </div>
