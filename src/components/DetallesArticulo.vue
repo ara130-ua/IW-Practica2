@@ -1,5 +1,6 @@
 <script setup>
 import { getArticuloById } from '@/repository/articulos'
+import { articuloEnCarrito, agregarArticuloAlCarrito } from '@/repository/carrito'
 import {
   addListaDeDeseos,
   eliminarListaDeDeseos,
@@ -53,9 +54,14 @@ const comprar = () => {
   }
 }
 
-const agregarAlCarrito = () => {
-  alert('Artículo añadido al carrito')
-  // Lógica para añadir al carrito
+const agregarAlCarrito = async () => {
+  if (await articuloEnCarrito(user.uid, articulo.value.id)) {
+    alert('El artículo ya está en el carrito')
+    return
+  } else {
+    await agregarArticuloAlCarrito(user.uid, articulo.value.id)
+    alert('Artículo añadido al carrito')
+  }
 }
 
 const toggleFavorito = async () => {
