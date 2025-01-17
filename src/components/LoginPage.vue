@@ -65,12 +65,10 @@ const togglePassword = () => {
 
 const onSubmit = async (values) => {
   try {
-    console.log(values)
     const user = userStore()
 
     const userData = await loginUsuario(values.email, values.password)
     if (userData) {
-
       user.setUid(userData.getId())
       user.setEmail(userData.getEmail())
       user.setName(userData.getNombre())

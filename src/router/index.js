@@ -7,9 +7,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import CarritoPage from '@/components/CarritoPage.vue'
 import UserProfile from '@/components/UserProfile.vue'
 import BackofficePanel from '@/components/BackofficePanel.vue'
-import GestionPedidos from '@/components/GestionPedidos.vue'
-import GestionArticulos from '@/components/GestionArticulos.vue'
-import GestionCategorias from '@/components/GestionCategorias.vue'
+import HistorialPedidos from '@/components/HistorialPedidos.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,6 +50,11 @@ const router = createRouter({
       path: '/perfil',
       name: 'perfil',
       component: UserProfile,
+    },
+    {
+      path: '/pedidos',
+      name: 'pedidos',
+      component: HistorialPedidos,
     },
     {
       path: '/office',

@@ -42,6 +42,8 @@
 import GestionPedidos from '@/components/GestionPedidos.vue'
 import GestionArticulos from '@/components/GestionArticulos.vue'
 import GestionCategorias from '@/components/GestionCategorias.vue'
+import { userStore } from '@/stores/userStore'
+import router from '@/router'
 
 export default {
   name: 'BackofficePanel',
@@ -49,6 +51,12 @@ export default {
     pedidos: GestionPedidos,
     articulos: GestionArticulos,
     categorias: GestionCategorias,
+  },
+  created() {
+    const user = userStore()
+    if (!user.isLoggedIn || !user.isAdmin) {
+      router.push('/')
+    }
   },
   data() {
     return {

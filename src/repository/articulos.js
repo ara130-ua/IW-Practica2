@@ -1,6 +1,7 @@
 //import { conexionbbdd } from '../conexionbbdd.js'
 import { supabase } from '@/utils/supabase'
 import { getCategoriaId } from './categorias'
+import axios from 'axios'
 
 export class Articulo {
   constructor(
@@ -182,7 +183,6 @@ export async function obtenerArticulos() {
     if (error) {
       throw error
     } else {
-      console.log(data)
       return data.map((articulo) => ({
         id: articulo.cod,
         nombre: articulo.nombre,
@@ -295,58 +295,106 @@ export async function addArticulo({
   }
 }
 
-export async function comprarArticulo(cliente_id, articulo_cod, cantidad, modo_entrega, tienda_id, estado) {
+export async function comprarArticulo(
+  cliente_id,
+  articulo_cod,
+  cantidad,
+  modo_entrega,
+  tienda_id,
+  estado,
+) {
   try {
-      // Obtener datos del artículo
-      const { data: articuloData, error: articuloError } = await supabase
-          .from('articulo')
-          .select('precio')
-          .eq('cod', articulo_cod)
-          .single();
+    // Obtener datos del artículo
+    const { data: articuloData, error: articuloError } = await supabase
+      .from('articulo')
+      .select('precio')
+      .eq('cod', articulo_cod)
+      .single()
 
-      if (articuloError) 
-        throw articuloError;
+    if (articuloError) throw articuloError
 
-      const precio = articuloData.precio;
-      const importe = precio * cantidad;
+    const precio = articuloData.precio
+    const importe = precio * cantidad
 
-      // Crear el pedido
-      const { data: pedidoData, error: pedidoError } = await supabase
-          .from('pedido')
-          .insert({
-              fecha: new Date().toISOString().split('T')[0],
-              importe: importe,
-              modo_entrega: modo_entrega, // Puedes ajustarlo según sea necesario
-              gastos_envio: 5, // Esto hay que ajustarlo
-              estado: estado,
-              cliente_id: cliente_id,
-              tienda_id: tienda_id, // Ajustar según la lógica de negocio
-          })
-          .select('id');
+    // Crear el pedido
+    const { data: pedidoData, error: pedidoError } = await supabase
+      .from('pedido')
+      .insert({
+        fecha: new Date().toISOString().split('T')[0],
+        importe: importe,
+        modo_entrega: modo_entrega, // Puedes ajustarlo según sea necesario
+        gastos_envio: 5, // Esto hay que ajustarlo
+        estado: estado,
+        cliente_id: cliente_id,
+        tienda_id: tienda_id, // Ajustar según la lógica de negocio
+      })
+      .select('id')
 
-      if (pedidoError) throw pedidoError;
+    if (pedidoError) throw pedidoError
 
-      const pedidoId = pedidoData[0].id;
+    const pedidoId = pedidoData[0].id
 
-      // Crear la línea del pedido
-      const { error: lineaError } = await supabase
-          .from('lin_ped')
-          .insert({
-              pedido_id: pedidoId,
-              articulo_cod: articulo_cod,
-              cantidad: cantidad,
-              precio: precio,
-          });
+    // Crear la línea del pedido
+    const { error: lineaError } = await supabase.from('lin_ped').insert({
+      pedido_id: pedidoId,
+      articulo_cod: articulo_cod,
+      cantidad: cantidad,
+      precio: precio,
+    })
 
-      if (lineaError) 
-        throw lineaError;
+    if (lineaError) throw lineaError
 
-      return { success: true, pedidoId };
+    return { success: true, pedidoId }
   } catch (err) {
-      console.error('Error al comprar el artículo:', err);
-      throw err;
+    console.error('Error al comprar el artículo:', err)
+    throw err
   }
 }
+
+export async function mandarPararelaPago(
+  amount,
+  description,
+  reference,
+  currency = 'EUR',
+  url_callback = 'https://iw-practica2.vercel.app/',
+) {
+  try {
+    const url = `https://api.green-sys.es/sales`
+
+    // Configurar los datos del cuerpo
+    const body = {
+      amount: amount,
+      currency: currency,
+      description: description,
+      reference: reference,
+      url_callback: url_callback,
+    }
+
+    // Hacer la solicitud PUT con encabezados y cuerpo
+    const response = await axios.put(url, body, {
+      headers: {
+        'x-api-key': 'sk_n3dvmlhdorm60kia8o', // Reemplaza con tu API Key
+        'Content-Type': 'application/json',
+      },
+    })
+
+    // Manejo de la respuesta exitosa
+    console.log('Datos:', response.data)
+    return response.data
+  } catch (error) {
+    // Manejo de errores
+    console.error('Error en la solicitud:', error.message)
+
+    if (error.response) {
+      console.error('Código de estado:', error.response.status)
+      console.error('Detalles del error:', error.response.data)
+    }
+
+    // Devolver el mensaje de error
+    return error.message
+  }
+}
+
 /*
 //crearArticulo() referencia, nombre, descripcion-corta, descripcion-larga, detalles, modelo, talla, precio, descuento, marca_id, categoria_id, subcategoria_id
 export async function crearArticulo(articulo) {

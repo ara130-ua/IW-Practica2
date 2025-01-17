@@ -25,7 +25,11 @@
         <div class="form-group">
           <label for="repeatPassword">Confirmar contraseña</label>
           <div class="password-input">
-            <Field :type="showRepeatPassword ? 'text' : 'password'" name="repeatPassword" id="repeatPassword" />
+            <Field
+              :type="showRepeatPassword ? 'text' : 'password'"
+              name="repeatPassword"
+              id="repeatPassword"
+            />
             <button type="button" class="toggle-password" @click="toggleRepeatPassword">
               <EyeIcon v-if="showRepeatPassword" />
               <EyeOffIcon v-else />
@@ -93,8 +97,9 @@
 
       <div class="checkbox-group">
         <label>
-          <Field name="terms" type="checkbox" />
-          Confirmo que he leído y acepto los términos y condiciones de servicio y la política de privacidad
+          <Field v-model="termsAccepted" name="terms" type="checkbox" />
+          Confirmo que he leído y acepto los términos y condiciones de servicio y la política de
+          privacidad
         </label>
         <span class="error" v-if="errors.terms">{{ errors.terms }}</span>
       </div>
@@ -109,64 +114,62 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue';
-  import { Form, Field } from 'vee-validate';
-  import { RouterLink } from 'vue-router';
-  import * as yup from 'yup';
-  import { EyeIcon, EyeOffIcon } from 'lucide-vue-next';
-  import { userStore } from '@/stores/userStore';
-  import { Usuario, registrarUsuario } from '@/repository/cliente.js';
-  import router from '@/router'
+import { ref } from 'vue'
+import { Form, Field } from 'vee-validate'
+import { RouterLink } from 'vue-router'
+import * as yup from 'yup'
+import { EyeIcon, EyeOffIcon } from 'lucide-vue-next'
+import { userStore } from '@/stores/userStore'
+import { Usuario, registrarUsuario } from '@/repository/cliente.js'
+import router from '@/router'
 
-  const schema = yup.object().shape({
-    email: yup
-      .string()
-      .email('Correo electrónico inválido')
-      .required('El correo electrónico es obligatorio'),
-    password: yup
-      .string()
-      .min(8, 'La contraseña debe tener al menos 8 caracteres')
-      .required('La contraseña es obligatoria'),
-    repeatPassword: yup
-      .string()
-      .oneOf([yup.ref('password'), null], 'Las contraseñas deben coincidir')
-      .required('Repite la contraseña'),
-    dni: yup
-      .string()
-      .required('El DNI es obligatorio')
-      .matches(/^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'DNI inválido'),
-      //.matches(/^[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'NIE inválido'),
-    gender: yup.string().required('El género es obligatorio'),
-    firstName: yup.string().required('El nombre es obligatorio'),
-    lastName: yup.string().required('Los apellidos son obligatorios'),
-    birthDate: yup.date().required('La fecha de nacimiento es obligatoria'),
-    city: yup.string().required('La localidad es obligatoria'),
-    address: yup.string().required('La dirección es obligatoria'),
-    phone: yup
-      .string()
-      .required('El teléfono es obligatorio')
-      .matches(/^[0-9]{9}$/, 'Teléfono inválido'),
-    terms: yup
-      .boolean()
-      .oneOf([true], 'Debes aceptar los términos y condiciones')
-  });
+const schema = yup.object().shape({
+  email: yup
+    .string()
+    .email('Correo electrónico inválido')
+    .required('El correo electrónico es obligatorio'),
+  password: yup
+    .string()
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
+    .required('La contraseña es obligatoria'),
+  repeatPassword: yup
+    .string()
+    .oneOf([yup.ref('password'), null], 'Las contraseñas deben coincidir')
+    .required('Repite la contraseña'),
+  dni: yup
+    .string()
+    .required('El DNI es obligatorio')
+    .matches(/^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'DNI inválido'),
+  //.matches(/^[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/i, 'NIE inválido'),
+  gender: yup.string().required('El género es obligatorio'),
+  firstName: yup.string().required('El nombre es obligatorio'),
+  lastName: yup.string().required('Los apellidos son obligatorios'),
+  birthDate: yup.date().required('La fecha de nacimiento es obligatoria'),
+  city: yup.string().required('La localidad es obligatoria'),
+  address: yup.string().required('La dirección es obligatoria'),
+  phone: yup
+    .string()
+    .required('El teléfono es obligatorio')
+    .matches(/^[0-9]{9}$/, 'Teléfono inválido'),
+  terms: yup.string().oneOf([false], 'Debes aceptar los términos y condiciones'),
+})
 
-  const showPassword = ref(false);
-  const showRepeatPassword = ref(false);
+const showPassword = ref(false)
+const showRepeatPassword = ref(false)
+const termsAccepted = ref(false)
 
-  const togglePassword = () => {
-    showPassword.value = !showPassword.value;
-  };
+const togglePassword = () => {
+  showPassword.value = !showPassword.value
+}
 
-  const toggleRepeatPassword = () => {
-    showRepeatPassword.value = !showRepeatPassword.value;
-  };
+const toggleRepeatPassword = () => {
+  showRepeatPassword.value = !showRepeatPassword.value
+}
 
-  const onSubmit = async (values) => {
-    
-    try {
-
-      const userData = await registrarUsuario(new Usuario(
+const onSubmit = async (values) => {
+  try {
+    const userData = await registrarUsuario(
+      new Usuario(
         0,
         values.email,
         values.firstName,
@@ -179,180 +182,183 @@
         values.gender,
         values.birthDate,
         values.address,
-      ));
+      ),
+    )
 
-      console.log(userData);
+    const user = userStore()
 
-      const user = userStore();
-
-      user.setUid(userData.getId());
-      user.setEmail(userData.getEmail());
-      if (userData.rol === 1) {
-        user.setRol('admin')
-      } else {
-        user.setRol('user')
-      }
-      user.setName(userData.getNombre());
-
-      router.push('/');
-    } catch (error) {
-      console.log(error);
+    user.setUid(userData.getId())
+    user.setEmail(userData.getEmail())
+    if (userData.rol === 1) {
+      user.setRol('admin')
+    } else {
+      user.setRol('user')
     }
+    user.setName(userData.getNombre())
 
-  };
+    router.push('/')
+  } catch (error) {
+    console.log(error)
+  }
+}
 </script>
 
 <style scoped>
-  .registration-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  .google-btn {
-    width: 100%;
-    padding: 10px;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    cursor: pointer;
-    margin-bottom: 20px;
-  }
-  
-  .link {
-    text-align: center;
-    text-decoration: none;
-    font-weight: 500;
-  }
+.registration-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
-  .divider {
-    text-align: center;
-    margin: 20px 0;
-    color: #666;
-    position: relative;
-  }
-  
-  .divider::before,
-  .divider::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 45%;
-    height: 1px;
-    background: #ddd;
-  }
-  
-  .divider::before { left: 0; }
-  .divider::after { right: 0; }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.google-btn {
+  width: 100%;
+  padding: 10px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.link {
+  text-align: center;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.divider {
+  text-align: center;
+  margin: 20px 0;
+  color: #666;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background: #ddd;
+}
+
+.divider::before {
+  left: 0;
+}
+.divider::after {
+  right: 0;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: #666;
+  font-size: 14px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #666;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.checkbox-group {
+  margin: 15px 0;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkbox-group input[type='checkbox'] {
+  width: auto;
+  margin-top: 3px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.submit-btn:hover {
+  background: #444;
+}
+
+.password-input {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-password:focus {
+  outline: none;
+}
+
+@media (max-width: 600px) {
   .form-row {
-    display: flex;
-    gap: 20px;
+    flex-direction: column;
+    gap: 0;
   }
-  
-  .form-row .form-group {
-    flex: 1;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-    color: #666;
-    font-size: 14px;
-  }
-  
-  input, select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  input:focus, select:focus {
-    outline: none;
-    border-color: #666;
-  }
-  
-  .error {
-    color: red;
-    font-size: 12px;
-    margin-top: 4px;
-  }
-  
-  .checkbox-group {
-    margin: 15px 0;
-  }
-  
-  .checkbox-group label {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    cursor: pointer;
-  }
-  
-  .checkbox-group input[type="checkbox"] {
-    width: auto;
-    margin-top: 3px;
-  }
-  
-  .submit-btn {
-    width: 100%;
-    padding: 12px;
-    background: #333;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 20px;
-  }
-  
-  .submit-btn:hover {
-    background: #444;
-  }
-  
-  .password-input {
-    position: relative;
-  }
-
-  .toggle-password {
-    position: absolute;
-    right: 0px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .toggle-password:focus {
-    outline: none;
-  }
-
-
-  @media (max-width: 600px) {
-    .form-row {
-      flex-direction: column;
-      gap: 0;
-    }
-  }
+}
 </style>

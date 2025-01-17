@@ -1,5 +1,5 @@
 <script setup>
-import { getArticuloById } from '@/repository/articulos'
+import { getArticuloById, mandarPararelaPago } from '@/repository/articulos'
 import { articuloEnCarrito, agregarArticuloAlCarrito } from '@/repository/carrito'
 import {
   addListaDeDeseos,
@@ -10,6 +10,8 @@ import { userStore } from '@/stores/userStore'
 import { onMounted } from 'vue'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { comprarArticulo } from '@/repository/articulos'
+import { obtenerTiendas } from '@/repository/tienda'
 
 // Referencias y estados reactivos
 var articulo = ref({
@@ -24,6 +26,7 @@ var articulo = ref({
 })
 
 var esFavorito = ref(false)
+const tiendas = ref([])
 const router = useRouter()
 const user = userStore()
 
@@ -37,17 +40,27 @@ const precioFinal = computed(() =>
 // Cargar detalles del artículo al montar el componente
 onMounted(async () => {
   articulo.value = await getArticuloById(router.currentRoute.value.params.id)
-  console.log(articulo.value)
+  tiendas.value = await obtenerTiendas()
 })
 
 // Métodos
-const formatPrecio = (precio) => `$${precio.toFixed(2)}`
+const formatPrecio = (precio) => `${precio.toFixed(2)}€`
 
-const comprar = () => {
+const comprar = async () => {
   const user = userStore()
   if (user.isLoggedIn) {
-    alert('Procesando compra...')
+    alert('Compra realizada')
     // Lógica para procesar la compra
+    await comprarArticulo(user.uid, articulo.value.id, 1, 'envio', 1, 'pendiente')
+    console.log('Compra realizada')
+    const urlPasarela = await mandarPararelaPago(
+      articulo.value.precio,
+      articulo.value.nombre,
+      Date.now(),
+    )
+    console.log(urlPasarela.url)
+    // redirecciona a la pasarela de pago
+    window.open(urlPasarela.url, '_blank').focus()
   } else {
     alert('Debes iniciar sesión para comprar')
     router.push('/login')
@@ -103,6 +116,15 @@ const toggleFavorito = async () => {
           formatPrecio(articulo.precio)
         }}</span>
         <span class="precio-actual">{{ formatPrecio(precioFinal) }}</span>
+      </div>
+      <div class="tiendas-dropdown">
+        <label for="tienda-select">Seleccionar tienda para recogida:</label>
+        <select id="tienda-select" v-model="tiendaSeleccionada">
+          <option value="">Seleccione una tienda</option>
+          <option v-for="tienda in tiendas" :key="tienda.id" :value="tienda.id">
+            {{ tienda.nombre }}
+          </option>
+        </select>
       </div>
       <div class="acciones">
         <button @click="comprar" class="btn-comprar">Comprar ahora</button>
@@ -226,6 +248,24 @@ h1 {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+.tiendas-dropdown {
+  margin-bottom: 20px;
+}
+
+.tiendas-dropdown label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.tiendas-dropdown select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
 @media (max-width: 768px) {

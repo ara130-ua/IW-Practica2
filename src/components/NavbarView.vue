@@ -51,6 +51,9 @@ const logOut = async () => {
             <RouterLink to="/perfil" @click="toggleDropdown">Perfil</RouterLink>
           </li>
           <li>
+            <RouterLink to="/pedidos" @click="toggleDropdown">Pedidos</RouterLink>
+          </li>
+          <li>
             <RouterLink to="/carrito" @click="toggleDropdown">Carrito</RouterLink>
           </li>
           <li>
