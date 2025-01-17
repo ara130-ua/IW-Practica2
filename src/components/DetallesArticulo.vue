@@ -38,7 +38,6 @@ const precioFinal = computed(() =>
 // Cargar detalles del artículo al montar el componente
 onMounted(async () => {
   articulo.value = await getArticuloById(router.currentRoute.value.params.id)
-  console.log(articulo.value)
 })
 
 // Métodos

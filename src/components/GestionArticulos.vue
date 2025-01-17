@@ -113,7 +113,6 @@ export default {
       this.categorias.push(categoria.nombre)
     }
     this.articulos = await obtenerArticulosCategoria()
-    console.log(this.articulos)
   },
   methods: {
     /*
