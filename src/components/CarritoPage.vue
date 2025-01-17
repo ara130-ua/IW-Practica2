@@ -114,6 +114,7 @@ export default {
                                 1);
         comprarCarrito(pedido)
         console.log('Compra realizada')
+        this.productosEnCarrito = []
         //Falta quitar los productos del carrito
       }catch(error){
         console.log(error)
