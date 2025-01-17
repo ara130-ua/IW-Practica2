@@ -38,7 +38,6 @@ const precioFinal = computed(() =>
 // Cargar detalles del artículo al montar el componente
 onMounted(async () => {
   articulo.value = await getArticuloById(router.currentRoute.value.params.id)
-  console.log(articulo.value)
 })
 
 // Métodos
@@ -49,12 +48,7 @@ const comprar = () => {
   if (user.isLoggedIn) {
     alert('Compra realizada')
     // Lógica para procesar la compra
-    comprarArticulo(user.uid,
-                    articulo.value.id,
-                    1,
-                    'envio',
-                    1,
-                    'pendiente');
+    comprarArticulo(user.uid, articulo.value.id, 1, 'envio', 1, 'pendiente')
     console.log('Compra realizada')
   } else {
     alert('Debes iniciar sesión para comprar')

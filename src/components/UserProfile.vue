@@ -157,9 +157,8 @@ export default {
           fechaNacimiento: datos.getFechaNacimiento?.() || '',
           localidad: datos.getPostal?.() || '',
           direccion: datos.getDireccion?.() || '',
-          telefono: datos.getTelefono?.() || ''
+          telefono: datos.getTelefono?.() || '',
         }
-
       } catch (error) {
         console.error('Error al cargar datos del usuario:', error)
       } finally {
@@ -168,11 +167,9 @@ export default {
     },
     async onSubmit(values) {
       try {
-        console.log('Datos actualizados:', values)
-
         const user = userStore()
         const usuario = await obtenerUsuarioEmail(user.email)
-        
+
         usuario.setNombre(values.nombre)
         usuario.setApellidos(values.apellidos)
         usuario.setGenero(values.genero)
@@ -181,11 +178,7 @@ export default {
         usuario.setDireccion(values.direccion)
         usuario.setTelefono(values.telefono)
 
-        console.log(usuario)
-
-        if(await modificarUsuario(usuario))
-          console.log('Usuario modificado correctamente')
-
+        if (await modificarUsuario(usuario)) console.log('Usuario modificado correctamente')
 
         alert('Perfil actualizado correctamente')
       } catch (error) {
@@ -281,4 +274,3 @@ select:focus {
   }
 }
 </style>
-
