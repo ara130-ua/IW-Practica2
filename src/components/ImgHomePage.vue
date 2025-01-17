@@ -12,8 +12,8 @@
       />
       <div class="text-overlay">
         <div class="text-content">
-          <h1 class="home-page-title">Welcome to SPORTIVE</h1>
-          <p class="home-page-subtitle">The best place to find sportswear</p>
+          <h1 class="home-page-title">Bienvenido a SPORTIVE</h1>
+          <p class="home-page-subtitle">El mejor lugar para encontrar artículos de deportes</p>
         </div>
       </div>
     </div>
