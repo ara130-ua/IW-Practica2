@@ -12,7 +12,8 @@ export async function obtenerCarrito(clienteId) {
             cod,
             nombre,
             descripcion_larga,
-            precio
+            precio,
+            imagen
           )
         `,
       )
@@ -28,7 +29,7 @@ export async function obtenerCarrito(clienteId) {
       nombre: item.articulo.nombre,
       descripcion: item.articulo.descripcion_larga,
       precio: item.articulo.precio,
-      imagen: 'https://via.placeholder.com/150', // Cambia esto si tienes imágenes reales
+      imagen: item.articulo.imagen, // Cambia esto si tienes imágenes reales
       cantidad: item.cantidad,
     }))
   } catch (error) {
@@ -128,10 +129,7 @@ export async function eliminarArticuloDelCarrito(clienteId, articuloId) {
 
 export async function vaciarCarrito(clienteId) {
   try {
-    const { data, error } = await supabase
-      .from('carrito')
-      .delete()
-      .eq('cliente_id', clienteId)
+    const { data, error } = await supabase.from('carrito').delete().eq('cliente_id', clienteId)
 
     if (error) {
       throw error
@@ -146,79 +144,74 @@ export async function vaciarCarrito(clienteId) {
 
 export async function calcularTotalCarrito(cliente_id) {
   try {
-      const { data, error } = await supabase
-          .from('carrito')
-          .select('articulo_cod, cantidad, articulo(precio)')
-          .eq('cliente_id', cliente_id);
+    const { data, error } = await supabase
+      .from('carrito')
+      .select('articulo_cod, cantidad, articulo(precio)')
+      .eq('cliente_id', cliente_id)
 
-      if (error) throw error;
+    if (error) throw error
 
-      const total = data.reduce((acc, item) => {
-          const precio = item.articulo.precio || 0;
-          return acc + precio * item.cantidad;
-      }, 0);
+    const total = data.reduce((acc, item) => {
+      const precio = item.articulo.precio || 0
+      return acc + precio * item.cantidad
+    }, 0)
 
-      return total;
+    return total
   } catch (err) {
-      console.error('Error calculando el total del carrito:', err);
-      throw err;
+    console.error('Error calculando el total del carrito:', err)
+    throw err
   }
 }
 
 // Función para crear un pedido y sus líneas asociadas
 export async function comprarCarrito(pedido) {
   try {
-      // Calcular el total del carrito
-      const totalCarrito = await calcularTotalCarrito(pedido.getClienteId());
+    // Calcular el total del carrito
+    const totalCarrito = await calcularTotalCarrito(pedido.getClienteId())
 
-      // Crear el pedido
-      const { data: pedidoData, error: pedidoError } = await supabase
-          .from('pedido')
-          .insert({
-              fecha: new Date().toISOString().split('T')[0],
-              importe: totalCarrito,
-              modo_entrega: pedido.getModoEntrega(),
-              gastos_envio: pedido.getGastosEnvio(),
-              estado: pedido.getEstado(),
-              cliente_id: pedido.getClienteId(),
-              tienda_id: pedido.getTiendaId(),
-          })
-          .select('id'); //Recupera el id del pedido
+    // Crear el pedido
+    const { data: pedidoData, error: pedidoError } = await supabase
+      .from('pedido')
+      .insert({
+        fecha: new Date().toISOString().split('T')[0],
+        importe: totalCarrito,
+        modo_entrega: pedido.getModoEntrega(),
+        gastos_envio: pedido.getGastosEnvio(),
+        estado: pedido.getEstado(),
+        cliente_id: pedido.getClienteId(),
+        tienda_id: pedido.getTiendaId(),
+      })
+      .select('id') //Recupera el id del pedido
 
-      if (pedidoError) 
-        throw pedidoError;
+    if (pedidoError) throw pedidoError
 
-      const pedidoId = pedidoData[0].id;
+    const pedidoId = pedidoData[0].id
 
-      // Obtener los artículos del carrito
-      const { data: carritoData, error: carritoError } = await supabase
-          .from('carrito')
-          .select('articulo_cod, cantidad, articulo(precio)')
-          .eq('cliente_id', pedido.getClienteId());
+    // Obtener los artículos del carrito
+    const { data: carritoData, error: carritoError } = await supabase
+      .from('carrito')
+      .select('articulo_cod, cantidad, articulo(precio)')
+      .eq('cliente_id', pedido.getClienteId())
 
-      if (carritoError) 
-        throw carritoError;
+    if (carritoError) throw carritoError
 
-      // Crear las líneas del pedido
-      const lineasPedido = carritoData.map((item) => ({
-          pedido_id: pedidoId,
-          articulo_cod: item.articulo_cod,
-          cantidad: item.cantidad,
-          precio: item.articulo.precio,
-      }));
+    // Crear las líneas del pedido
+    const lineasPedido = carritoData.map((item) => ({
+      pedido_id: pedidoId,
+      articulo_cod: item.articulo_cod,
+      cantidad: item.cantidad,
+      precio: item.articulo.precio,
+    }))
 
-      const { error: lineasError } = await supabase
-          .from('lin_ped')
-          .insert(lineasPedido);
+    const { error: lineasError } = await supabase.from('lin_ped').insert(lineasPedido)
 
-      if (lineasError) 
-        throw lineasError;
+    if (lineasError) throw lineasError
 
-      vaciarCarrito(pedido.getClienteId());
+    vaciarCarrito(pedido.getClienteId())
 
-      return { success: true, pedidoId };
+    return { success: true, pedidoId }
   } catch (err) {
-      console.error('Error al comprar el carrito:', err);
-      throw err;
+    console.error('Error al comprar el carrito:', err)
+    throw err
   }
 }

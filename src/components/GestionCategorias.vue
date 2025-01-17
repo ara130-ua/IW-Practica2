@@ -27,10 +27,6 @@
             <label>Nombre</label>
             <input type="text" v-model="formCategoria.nombre" required />
           </div>
-          <div class="form-group">
-            <label>Descripción</label>
-            <textarea v-model="formCategoria.descripcion" required></textarea>
-          </div>
           <div class="modal-actions">
             <button type="submit" class="btn-primary">Guardar</button>
             <button type="button" @click="showModal = false" class="btn-secondary">Cancelar</button>
@@ -42,7 +38,12 @@
 </template>
 
 <script>
-import { agregarCategoria, obtenerCategoriasConConteo } from '@/repository/categorias'
+import {
+  actualizarCategoriaById,
+  agregarCategoria,
+  eliminarCategoriaById,
+  obtenerCategoriasConConteo,
+} from '@/repository/categorias'
 
 export default {
   name: 'GestionCategorias',
@@ -69,10 +70,11 @@ export default {
       this.formCategoria = { ...categoria }
       this.showModal = true
     },
-    eliminarCategoria(id) {
+    async eliminarCategoria(id) {
       if (confirm('¿Está seguro de eliminar esta categoría?')) {
         this.categorias = this.categorias.filter((c) => c.id !== id)
       }
+      await eliminarCategoriaById(id)
     },
     async guardarCategoria() {
       if (this.editingCategoria) {
@@ -81,6 +83,7 @@ export default {
           ...this.editingCategoria,
           ...this.formCategoria,
         }
+        await actualizarCategoriaById(this.editingCategoria.id, this.formCategoria.nombre)
       } else {
         this.categorias.push({
           ...this.formCategoria,

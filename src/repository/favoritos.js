@@ -10,7 +10,8 @@ export async function obtenerListaDeseos(clienteId) {
             cod,
             nombre,
             descripcion_larga,
-            precio
+            precio,
+            imagen
           )
         `,
       )
@@ -26,7 +27,7 @@ export async function obtenerListaDeseos(clienteId) {
       nombre: deseo.articulo.nombre,
       descripcion: deseo.articulo.descripcion_larga,
       precio: deseo.articulo.precio,
-      imagen: 'https://via.placeholder.com/150', // Cambia esto si tienes imágenes reales
+      imagen: deseo.articulo.imagen, // Cambia esto si tienes imágenes reales
     }))
   } catch (error) {
     console.error('Error al obtener la lista de deseos:', error)

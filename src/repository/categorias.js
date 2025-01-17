@@ -63,6 +63,38 @@ export async function agregarCategoria(nombre) {
   }
 }
 
+export async function eliminarCategoriaById(id) {
+  try {
+    const { data, error } = await supabase.from('categoria').delete().eq('id', id)
+
+    if (error) {
+      throw error
+    }
+
+    console.log('Categoría eliminada correctamente:', data)
+    return data
+  } catch (error) {
+    console.error('Error al eliminar la categoría:', error)
+    return null
+  }
+}
+
+export async function actualizarCategoriaById(id, nombre) {
+  try {
+    const { data, error } = await supabase.from('categoria').update({ nombre }).eq('id', id)
+
+    if (error) {
+      throw error
+    }
+
+    console.log('Categoría actualizada correctamente:', data)
+    return data
+  } catch (error) {
+    console.error('Error al actualizar la categoría:', error)
+    return null
+  }
+}
+
 /*
 // Gestionar categorías
 export async function anadirCategoria(categoria) {

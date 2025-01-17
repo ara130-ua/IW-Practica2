@@ -8,7 +8,7 @@
         <input type="text" v-model="search" placeholder="Buscar artículo..." />
         <select v-model="categoryFilter">
           <option value="">Todas las categorías</option>
-          <option v-for="cat in categorias" :key="cat" :value="cat">
+          <option v-for="cat in categorias" :key="cat.id" :value="cat.id">
             {{ cat }}
           </option>
         </select>
@@ -53,7 +53,7 @@
           <div class="form-group">
             <label>Categoría</label>
             <select v-model="formArticulo.categoria" required>
-              <option v-for="cat in categorias" :key="cat" :value="cat">
+              <option v-for="cat in categorias" :key="cat.id" :value="cat.id">
                 {{ cat }}
               </option>
             </select>
@@ -112,6 +112,7 @@ export default {
     for (let categoria of categoriasAux) {
       this.categorias.push(categoria.nombre)
     }
+    console.log(this.categorias)
     this.articulos = await obtenerArticulosCategoria()
   },
   methods: {
@@ -133,14 +134,20 @@ export default {
     guardarArticulo() {
       if (this.editingArticulo) {
         const id = this.articulos.findIndex((a) => a.id === this.editingArticulo.id)
-        //this.articulos[index] = { ...this.formArticulo }
-        actualizarArticulo(id + 1, this.formArticulo)
+        this.articulos[id] = { ...this.formArticulo }
+        console.log(this.formArticulo.categoria)
+        actualizarArticulo(
+          id + 1,
+          this.formArticulo.nombre,
+          this.formArticulo.categoria,
+          this.formArticulo.price,
+        )
       } else {
         /*this.articulos.push({
           ...this.formArticulo,
           id: (this.articulos.length + 1).toString(),
         })*/
-        addArticulo(this.formArticulo)
+        addArticulo(this.formArticulo.nombre, this.formArticulo.price)
       }
       this.showModal = false
       this.editingArticulo = null
