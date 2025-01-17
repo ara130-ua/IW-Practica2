@@ -146,3 +146,60 @@ export async function fetchArticuloNombreYCantidad(pedidoId) {
     cantidad: row.cantidad,
   }))
 }
+
+export async function obtenerPedidosPorCliente(clienteId) {
+  try {
+    const { data, error } = await supabase
+      .from('pedido')
+      .select(
+        `
+        id,
+        fecha,
+        importe,
+        estado
+      `,
+      )
+      .eq('cliente_id', clienteId) // Filtra por el cliente_id proporcionado
+
+    if (error) {
+      throw error
+    }
+
+    return data.map((pedido) => ({
+      id: pedido.id,
+      fecha: pedido.fecha,
+      importe: pedido.importe,
+      estado: pedido.estado,
+    }))
+  } catch (error) {
+    console.error('Error al obtener los pedidos del cliente:', error)
+    return null
+  }
+}
+
+export async function obtenerDetallesPedido(pedidoId) {
+  try {
+    const { data, error } = await supabase
+      .from('lin_ped')
+      .select(
+        `
+        cantidad,
+        articulo:articulo_cod (nombre, precio)
+      `,
+      )
+      .eq('pedido_id', pedidoId) // Filtra por el id del pedido
+
+    if (error) {
+      throw error
+    }
+
+    return data.map((linea) => ({
+      nombre: linea.articulo?.nombre || 'Artículo desconocido',
+      cantidad: linea.cantidad,
+      precio: linea.articulo?.precio || 0, // Precio de cada artículo
+    }))
+  } catch (error) {
+    console.error('Error al obtener los detalles del pedido:', error)
+    return null
+  }
+}

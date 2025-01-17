@@ -42,6 +42,15 @@
       </ul>
       <div class="resumen-carrito">
         <p class="total">Total: {{ formatPrecio(totalCarrito) }}</p>
+        <div class="tiendas-dropdown">
+          <label for="tienda-select">Seleccionar tienda para recogida:</label>
+          <select id="tienda-select" v-model="tiendaSeleccionada">
+            <option value="">Seleccione una tienda</option>
+            <option v-for="tienda in tiendas" :key="tienda.id" :value="tienda.id">
+              {{ tienda.nombre }}
+            </option>
+          </select>
+        </div>
         <button @click="comprarCarrito" class="btn-comprar">Comprar Carrito</button>
       </div>
     </div>
@@ -53,17 +62,19 @@ import {
   actualizarCantidad,
   eliminarArticuloDelCarrito,
   obtenerCarrito,
-  comprarCarrito
+  comprarCarrito,
 } from '@/repository/carrito'
 import router from '@/router'
 import { userStore } from '@/stores/userStore'
-import { Pedido } from '@/repository/pedido';
-import { mandarPararelaPago } from '@/repository/articulos';
+import { Pedido } from '@/repository/pedido'
+import { mandarPararelaPago } from '@/repository/articulos'
+import { obtenerTiendas } from '@/repository/tienda'
 export default {
   name: 'CarritoCompras',
   data() {
     return {
       productosEnCarrito: [],
+      tiendas: [],
     }
   },
   computed: {
@@ -76,10 +87,11 @@ export default {
   async created() {
     const user = userStore()
     this.productosEnCarrito = await obtenerCarrito(user.uid)
+    this.tiendas = await obtenerTiendas()
   },
   methods: {
     formatPrecio(precio) {
-      return `$${precio.toFixed(2)}`
+      return `${precio.toFixed(2)}€`
     },
     async incrementarCantidad(producto) {
       producto.cantidad++
@@ -102,30 +114,29 @@ export default {
       alert('Producto eliminado del carrito')
     },
     async comprarCarrito() {
-      try{
+      try {
         alert(`Compra realizada por un total de ${this.formatPrecio(this.totalCarrito)}`)
         const user = userStore()
-        const pedido = new Pedido(0,
-                                Date.now(),
-                                this.totalCarrito,
-                                'entrega',
-                                1,
-                                'pendiente',
-                                user.uid,
-                                1);
+        const pedido = new Pedido(
+          0,
+          Date.now(),
+          this.totalCarrito,
+          'entrega',
+          1,
+          'pendiente',
+          user.uid,
+          1,
+        )
         comprarCarrito(pedido)
         console.log('Compra realizada')
-        const url_red = await mandarPararelaPago(this.totalCarrito, 'Carrito', Date.now());
+        const url_red = await mandarPararelaPago(this.totalCarrito, 'Carrito', Date.now())
         console.log(url_red.url)
         // redirecciona a la pasarela de pago
-        window
-          .open(url_red.url, '_blank')
-          .focus();
-
+        window.open(url_red.url, '_blank').focus()
 
         this.productosEnCarrito = []
         //Falta quitar los productos del carrito
-      }catch(error){
+      } catch (error) {
         console.log(error)
       }
     },
@@ -285,6 +296,24 @@ h1 {
 
 .btn-comprar:hover {
   background-color: #38a169;
+}
+
+.tiendas-dropdown {
+  margin-bottom: 20px;
+}
+
+.tiendas-dropdown label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.tiendas-dropdown select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
 @media (max-width: 600px) {
