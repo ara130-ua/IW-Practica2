@@ -10,6 +10,7 @@ import { userStore } from '@/stores/userStore'
 import { onMounted } from 'vue'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { comprarArticulo } from '@/repository/articulos'
 
 // Referencias y estados reactivos
 var articulo = ref({
@@ -46,8 +47,15 @@ const formatPrecio = (precio) => `$${precio.toFixed(2)}`
 const comprar = () => {
   const user = userStore()
   if (user.isLoggedIn) {
-    alert('Procesando compra...')
+    alert('Compra realizada')
     // Lógica para procesar la compra
+    comprarArticulo(user.uid,
+                    articulo.value.id,
+                    1,
+                    'envio',
+                    1,
+                    'pendiente');
+    console.log('Compra realizada')
   } else {
     alert('Debes iniciar sesión para comprar')
     router.push('/login')

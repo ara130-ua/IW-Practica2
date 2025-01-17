@@ -53,10 +53,11 @@ import {
   actualizarCantidad,
   eliminarArticuloDelCarrito,
   obtenerCarrito,
+  comprarCarrito
 } from '@/repository/carrito'
 import router from '@/router'
 import { userStore } from '@/stores/userStore'
-
+import { Pedido } from '@/repository/pedido';
 export default {
   name: 'CarritoCompras',
   data() {
@@ -100,9 +101,23 @@ export default {
       alert('Producto eliminado del carrito')
     },
     comprarCarrito() {
-      // Aquí iría la lógica para procesar la compra
-      alert(`Compra realizada por un total de ${this.formatPrecio(this.totalCarrito)}`)
-      this.productosEnCarrito = []
+      try{
+        alert(`Compra realizada por un total de ${this.formatPrecio(this.totalCarrito)}`)
+        const user = userStore()
+        const pedido = new Pedido(0,
+                                Date.now(),
+                                this.totalCarrito,
+                                'entrega',
+                                1,
+                                'pendiente',
+                                user.uid,
+                                1);
+        comprarCarrito(pedido)
+        console.log('Compra realizada')
+        //Falta quitar los productos del carrito
+      }catch(error){
+        console.log(error)
+      }
     },
     irATienda() {
       // Aquí iría la lógica para navegar a la página de la tienda
