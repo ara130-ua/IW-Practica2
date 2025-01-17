@@ -93,7 +93,7 @@
 
       <div class="checkbox-group">
         <label>
-          <Field name="terms" type="checkbox" />
+          <Field v-model="termsAccepted" name="terms" type="checkbox" />
           Confirmo que he leído y acepto los términos y condiciones de servicio y la política de privacidad
         </label>
         <span class="error" v-if="errors.terms">{{ errors.terms }}</span>
@@ -147,12 +147,13 @@
       .required('El teléfono es obligatorio')
       .matches(/^[0-9]{9}$/, 'Teléfono inválido'),
     terms: yup
-      .boolean()
-      .oneOf([true], 'Debes aceptar los términos y condiciones')
+      .string()
+      .oneOf([false], 'Debes aceptar los términos y condiciones')
   });
 
   const showPassword = ref(false);
   const showRepeatPassword = ref(false);
+  const termsAccepted = ref(false);
 
   const togglePassword = () => {
     showPassword.value = !showPassword.value;
@@ -356,3 +357,4 @@
     }
   }
 </style>
+
