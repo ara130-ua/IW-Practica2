@@ -58,6 +58,7 @@ import {
 import router from '@/router'
 import { userStore } from '@/stores/userStore'
 import { Pedido } from '@/repository/pedido';
+import { mandarPararelaPago } from '@/repository/articulos';
 export default {
   name: 'CarritoCompras',
   data() {
@@ -100,7 +101,7 @@ export default {
       await eliminarArticuloDelCarrito(user.uid, id)
       alert('Producto eliminado del carrito')
     },
-    comprarCarrito() {
+    async comprarCarrito() {
       try{
         alert(`Compra realizada por un total de ${this.formatPrecio(this.totalCarrito)}`)
         const user = userStore()
@@ -114,6 +115,14 @@ export default {
                                 1);
         comprarCarrito(pedido)
         console.log('Compra realizada')
+        const url_red = await mandarPararelaPago(this.totalCarrito, 'Carrito', Date.now());
+        console.log(url_red.url)
+        // redirecciona a la pasarela de pago
+        window
+          .open(url_red.url, '_blank')
+          .focus();
+
+
         this.productosEnCarrito = []
         //Falta quitar los productos del carrito
       }catch(error){
