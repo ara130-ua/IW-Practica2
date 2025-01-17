@@ -264,23 +264,12 @@ export async function eliminarArticulo(id) {
   }
 }
 
-export async function addArticulo({
-  nombre,
-  categoria_id,
-  precio,
-  descripcion_corta = null,
-  talla = null,
-  modelo = null,
-}) {
+export async function addArticulo({ nombre, precio }) {
   try {
     const { data, error } = await supabase.from('articulo').insert([
       {
-        nombre: nombre,
-        categoria_id: categoria_id,
-        precio: precio,
-        descripcion_corta: descripcion_corta,
-        talla: talla,
-        modelo: modelo,
+        nombre,
+        precio,
       },
     ])
 
