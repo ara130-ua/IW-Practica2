@@ -44,7 +44,7 @@ export default {
   },
   methods: {
     formatPrecio(precio) {
-      return `$${precio.toFixed(2)}`
+      return `${precio.toFixed(2)}€`
     },
     async eliminarFavorito(id) {
       // Eliminar el artículo de la lista de favoritos

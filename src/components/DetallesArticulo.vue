@@ -44,7 +44,7 @@ onMounted(async () => {
 })
 
 // Métodos
-const formatPrecio = (precio) => `$${precio.toFixed(2)}`
+const formatPrecio = (precio) => `${precio.toFixed(2)}€`
 
 const comprar = async () => {
   const user = userStore()

@@ -76,15 +76,7 @@ export default {
     return {
       search: '',
       statusFilter: '',
-      pedidos: [
-        {
-          id: '1001',
-          cliente_id: 'Juan Pérez',
-          fecha: new Date('2024-01-10'),
-          importe: 129.99,
-          estado: 'pendiente',
-        },
-      ],
+      pedidos: [],
       pedidoSeleccionado: null,
       articulosPedido: [],
       mostrarPopup: false,
@@ -116,7 +108,7 @@ export default {
       return new Date(date).toLocaleDateString()
     },
     formatPrice(price) {
-      return `$${price.toFixed(2)}`
+      return `${price.toFixed(2)}€`
     },
     verDetalles(pedido) {
       this.pedidoSeleccionado = pedido

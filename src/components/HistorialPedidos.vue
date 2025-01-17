@@ -14,7 +14,7 @@
         <tbody>
           <tr v-for="pedido in pedidos" :key="pedido.id">
             <td>{{ formatDate(pedido.fecha) }}</td>
-            <td>${{ pedido.importe.toFixed(2) }}</td>
+            <td>{{ pedido.importe.toFixed(2) }}€</td>
             <td>
               <span class="estado-badge" :class="getEstadoClass(pedido.estado)">
                 {{ pedido.estado }}
@@ -43,8 +43,8 @@
               <div class="articulo-info">
                 <h3>{{ articulo.nombre }}</h3>
                 <p>Cantidad: {{ articulo.cantidad }}</p>
-                <p>Precio unitario: ${{ articulo.precio.toFixed(2) }}</p>
-                <p>Subtotal: ${{ (articulo.precio * articulo.cantidad).toFixed(2) }}</p>
+                <p>Precio unitario: {{ articulo.precio.toFixed(2) }}€</p>
+                <p>Subtotal: {{ (articulo.precio * articulo.cantidad).toFixed(2) }}€</p>
               </div>
             </div>
           </div>
