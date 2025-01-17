@@ -1,5 +1,5 @@
 <script setup>
-import { getArticuloById } from '@/repository/articulos'
+import { getArticuloById, mandarPararelaPago } from '@/repository/articulos'
 import { articuloEnCarrito, agregarArticuloAlCarrito } from '@/repository/carrito'
 import {
   addListaDeDeseos,
@@ -44,18 +44,26 @@ onMounted(async () => {
 // Métodos
 const formatPrecio = (precio) => `$${precio.toFixed(2)}`
 
-const comprar = () => {
+const comprar = async () => {
   const user = userStore()
   if (user.isLoggedIn) {
     alert('Compra realizada')
     // Lógica para procesar la compra
-    comprarArticulo(user.uid,
+    await comprarArticulo(user.uid,
                     articulo.value.id,
                     1,
                     'envio',
                     1,
                     'pendiente');
     console.log('Compra realizada')
+    const urlPasarela = await mandarPararelaPago( articulo.value.precio, articulo.value.nombre, Date.now());
+    console.log(urlPasarela.url)
+    // redirecciona a la pasarela de pago
+    window
+    .open(urlPasarela.url, '_blank')
+    .focus();
+
+
   } else {
     alert('Debes iniciar sesión para comprar')
     router.push('/login')

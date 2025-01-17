@@ -1,6 +1,7 @@
 //import { conexionbbdd } from '../conexionbbdd.js'
 import { supabase } from '@/utils/supabase'
 import { getCategoriaId } from './categorias'
+import axios from 'axios'
 
 export class Articulo {
   constructor(
@@ -304,7 +305,7 @@ export async function comprarArticulo(cliente_id, articulo_cod, cantidad, modo_e
           .eq('cod', articulo_cod)
           .single();
 
-      if (articuloError) 
+      if (articuloError)
         throw articuloError;
 
       const precio = articuloData.precio;
@@ -338,7 +339,7 @@ export async function comprarArticulo(cliente_id, articulo_cod, cantidad, modo_e
               precio: precio,
           });
 
-      if (lineaError) 
+      if (lineaError)
         throw lineaError;
 
       return { success: true, pedidoId };
@@ -347,6 +348,50 @@ export async function comprarArticulo(cliente_id, articulo_cod, cantidad, modo_e
       throw err;
   }
 }
+
+
+
+export async function mandarPararelaPago(amount, description, reference, currency = "EUR", url_callback = "https://iw-practica2.vercel.app/") {
+  try {
+    const url = `https://api.green-sys.es/sales`;
+
+    // Configurar los datos del cuerpo
+    const body = {
+      "amount": amount,
+      "currency": currency,
+      "description": description,
+      "reference": reference,
+      "url_callback": url_callback
+    };
+
+    // Hacer la solicitud PUT con encabezados y cuerpo
+    const response = await axios.put(url, body, {
+      headers: {
+        'x-api-key': 'sk_n3dvmlhdorm60kia8o', // Reemplaza con tu API Key
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // Manejo de la respuesta exitosa
+    console.log('Datos:', response.data);
+    return response.data;
+
+  } catch (error) {
+    // Manejo de errores
+    console.error('Error en la solicitud:', error.message);
+
+    if (error.response) {
+      console.error('Código de estado:', error.response.status);
+      console.error('Detalles del error:', error.response.data);
+    }
+
+    // Devolver el mensaje de error
+    return error.message;
+  }
+}
+
+
+
 /*
 //crearArticulo() referencia, nombre, descripcion-corta, descripcion-larga, detalles, modelo, talla, precio, descuento, marca_id, categoria_id, subcategoria_id
 export async function crearArticulo(articulo) {
